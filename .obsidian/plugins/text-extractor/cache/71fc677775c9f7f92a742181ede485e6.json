@@ -1,0 +1,1 @@
+{"path":"Masters/Computational tools for data science/attachments/Pasted image 20240917182749.png","text":"MapReduce: Word Counting input splitting mapping shuffling reducing output (‘:‘:/)(/ map(word) = <word, 1> reduce(word, [1, 1, .., 1)) = <word, number of 1's>","libVersion":"0.3.2","langs":"eng"}

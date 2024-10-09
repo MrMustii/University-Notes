@@ -1,0 +1,1 @@
+{"path":"Bachelors/attachments/Pasted image 20240528134543.png","text":"Example: ¢ One-to-Many Relationship Set between instructor and student: An instructor is associated with several students via advisor. A student is associated with at most one instructor via advisor. instructor . ’ student 1D 1D namme name salary tot_cred","libVersion":"0.3.2","langs":"eng"}

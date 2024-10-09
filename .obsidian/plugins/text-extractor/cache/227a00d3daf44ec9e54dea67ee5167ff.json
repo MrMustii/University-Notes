@@ -1,0 +1,1 @@
+{"path":"Bachelors/attachments/Pasted image 20240529172149.png","text":"foreign key course_id references course ON DELETE CASCADE course id sec_id title. semester credits year T N .","libVersion":"0.3.2","langs":"eng"}

@@ -1,0 +1,193 @@
+{
+  "main": {
+    "id": "b1a3ac277c5a4360",
+    "type": "split",
+    "children": [
+      {
+        "id": "8a59c73321748a83",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f5496a1d3cd64006",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "80a84e13ea3aea36",
+    "type": "split",
+    "children": [
+      {
+        "id": "e8c8cf5dae521401",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1d91021c702c5d9e",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "f78cd6c41756a8f0",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "7e22c7009c14109d",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "35e3bf0212ccb671",
+    "type": "split",
+    "children": [
+      {
+        "id": "c322109980c958b2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4e68f9cca3723f3c",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "17b76875ddb17785",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "230b334bcfbf6973",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {}
+            }
+          },
+          {
+            "id": "3d382942728e9a99",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ],
+        "currentTab": 2
+      }
+    ],
+    "direction": "horizontal",
+    "width": 275.5,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "omnisearch:Omnisearch": false,
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "1d91021c702c5d9e",
+  "lastOpenFiles": [
+    "attachments/459675197_447036095153319_2728929346993351220_n.jpg",
+    "attachments",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments/{FC5E1A91-F6CF-4CAF-8602-412CE403DF51}.png",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments/{EE06DF7E-40A4-4E69-8F26-BE2300EE4010}.png",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments/{DF38675F-BBDA-4CDB-91E1-170E4EAD1FB1}.png",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments/{EC4AECCC-07A9-4C99-B166-16AFDDF7E6DF}.png",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments/{BF1AC494-D854-4220-A8AC-01CE1D1C1D1A}.png",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments/{CFDBAD5A-1144-4142-9717-F456D99B2E3C}.png",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments/{B5679655-FA9B-41B7-B4A5-452F9E0B657E}.png",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments/{A96AE77F-AF81-4DFF-B4D0-E5A399D70181}.png",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments/{B292F038-8664-4585-8B7E-5953BD6F4381}.png",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments/{9637E0BB-BA4C-4C3E-9914-9B2397AE0CF8}.png",
+    "Masters/Logical Theories for Uncertainty and Learning/Exercises.md",
+    "Masters/Logical Theories for Uncertainty and Learning/Logical Theories For Uncertainty and Learning.md",
+    "Masters/Social Graph interactions/Graph Theory.md",
+    "Masters/Logical Theories for Uncertainty and Learning/attachments",
+    "Masters/UX design prototyping/Week 2 notes.md",
+    "Masters/Social Graph interactions/attachments",
+    "Masters/UX design prototyping/attachments",
+    "Masters/Deep learning/Week 1.md",
+    "Masters/Deep learning/Untitled 1.md",
+    "Masters/Deep learning/Untitled.md",
+    "Masters/Deep learning/Random notes.md",
+    "Masters/Deep learning/Exercises.md",
+    "Masters/Deep learning/attachments",
+    "Masters/Computational tools for data science/Computational Tools for Data Science week 1.md",
+    "Masters/Computational tools for data science/attachments",
+    "Masters/Logical Theories for Uncertainty and Learning",
+    "Masters/Social Graph interactions",
+    "Masters/UX design prototyping",
+    "Masters/Deep learning",
+    "Bachelors/Bachelor Project/Functions/CODE/Bluetooth/DevicesFragment.md",
+    "Bachelors/Bachelor Project/Functions/CODE/Bluetooth/ConnectionManager.md",
+    "Bachelors/Bachelor Project/Functions/CODE/Bluetooth/BleOperationType.md",
+    "Bachelors/Bachelor Project/Functions/CODE/Bluetooth/BLEManager.md",
+    "Bachelors/Bachelor Project/Functions/CODE/Known Issues.md",
+    "Bachelors/Bachelor Project/Functions/Research.md",
+    "Bachelors/Bachelor Project/Functions/Untitled.md",
+    "Bachelors/Bachelor Project/Functions/Report.md",
+    "Bachelors/Bachelor Project/Functions/Meeting for ML.md",
+    "Bachelors/Y3S2_Database_Systems/Week 1.md",
+    "Bachelors/Y3S2_Database_Systems/Theory.md",
+    "Bachelors/Y3S2_Database_Systems/SQL.md",
+    "Bachelors/Bachelor Project/MVVM.md",
+    "Bachelors/Bachelor Project/BLE.md",
+    "Masters-Notes/Masters/Logical Theories for Uncertainty and Learning/Logical Theories For Uncertainty and Learning.md",
+    "Untitled.canvas"
+  ]
+}

@@ -1,0 +1,1 @@
+{"path":"Masters/Computational tools for data science/attachments/{D1A51524-DFD2-411D-A82F-E2E50CCAD2FA} 1.png","text":"In general, k-means (tries) to minimise the following term: k Z Z d(c, cent(C)) =1 ceg; Problematic, if (actual) clusters differ a lot in size or are not well-distributed. .00s|","libVersion":"0.3.2","langs":"eng"}

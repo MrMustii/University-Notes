@@ -1,0 +1,1 @@
+{"path":"Masters-Notes/Bachelors/attachments/Pasted image 20240418192021.png","text":"GRANT privileges ON object TO user; REVOKE privileges ON object FROM user; privileges It can be any of the following values: Privilege Description","libVersion":"0.3.2","langs":"eng"}
