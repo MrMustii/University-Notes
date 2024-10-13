@@ -1,3 +1,164 @@
+# Chapter 1 Using neural nets to recognize handwritten digits 
+
+## Perceptrons 
+- **Input and Output**: Perceptrons take multiple binary inputs, denoted as $x_1$, $x_2$, etc (0 or 1) and produce a single binary output (0 or 1)
+- **Weights and Threshold**: Each input to the perceptron has an associated weight, ($w_1$, $w_2$, etc.), a real number that represents the importance of that input. Additionally, a perceptron has a threshold value, also a real number.
+- **Weighted Sum and Decision:** The perceptron calculates the weighted sum of its inputs, meaning it multiplies each input by its corresponding weight and adds those products together $\text{output} = \begin{cases} 0 & \text{if } \sum_j w_j x_j \leq \text{threshold} \ 1 & \text{if } \sum_j w_j x_j > \text{threshold} \end{cases}$ 
+- **Output Based on Threshold:** If this weighted sum is less than or equal to the threshold, the perceptron outputs 0; if the weighted sum exceeds the threshold, the perceptron outputs 1.
+### The Bias Term
+To simplify the perceptron model, the book introduce the concept of a bias term. The bias, denoted as b, is defined as the negative of the threshold: $b \equiv -\text{threshold}$.
+Using the bias term, the perceptron rule can be rewritten as:
+
+$\text{output} = \begin{cases} 0 & \text{if } w \cdot x + b \leq 0\ 1 & \text{if } w \cdot x + b > 0 \end{cases}$ where: $w \cdot x$ is the dot product of the weight vector w and the input vector x. The bias term represents how easy it is to get the perceptron to output a 1. A larger bias makes it easier for the perceptron to fire, while a smaller (more negative) bias makes it harder.
+
+### Constructing More Complex Networks
+The book also discuss the possibility of building multi-layer perceptron networks to handle more complex tasks. These networks are arranged with:
+
+● An input layer that receives the initial data.
+● One or more hidden layers that perform intermediate computations.
+● An output layer that produces the final result.
+
+The idea is that each subsequent layer of perceptrons can make decisions at a higher level of abstraction by weighing the outputs of the previous layer.
+
+## Sigmoid neurons
+While perceptrons can be powerful computational tools, their reliance on a step function activation leads to a significant limitation. As previously noted in our conversation, small changes in the weights or bias of a perceptron can cause its output to flip completely, making the training process challenging. This is because the step function introduces a discontinuity. Sigmoid neurons address the limitations of perceptrons, specifically their abrupt, step-like activation function, by employing a smoother, continuous activation function called the sigmoid function. This allows for more nuanced output and a more stable learning process, crucial for gradient descent algorithms.
+
+The sigmoid function, denoted as $\sigma(z)$, takes any real number as input and outputs a value between 0 and 1. It is mathematically defined as: $\sigma(z) \equiv \frac{1}{1 + e^{-z}}$. The graph of the sigmoid function has a characteristic S-shape, gradually transitioning between 0 and 1. This smooth transition allows for a more continuous and subtle response to changes in the weighted input, unlike the abrupt step-like behaviour of perceptrons. 
+![[Pasted image 20241013173017.png]]
+Similar to perceptrons, a sigmoid neuron receives multiple inputs ($x_1$, $x_2$, etc.), each with an associated weight ($w_1$, $w_2$, etc.). It also has a bias term, b. However, instead of using a step function, the sigmoid neuron applies the sigmoid function to the weighted sum of its inputs plus the bias.
+
+The output of a sigmoid neuron is therefore given by: $\text{output} = \sigma(w \cdot x + b) = \sigma(\sum_j w_j x_j + b) = \frac{1}{1 + \text{exp}(-(\sum_j w_j x_j + b))}$
+
+When the weighted input to a sigmoid neuron ($z = w \cdot x + b$) is a large positive number, $e^{-z}$ becomes very small, making the output of the sigmoid function approximately 1, similar to a perceptron firing. Conversely, when z is a large negative number, $e^{-z}$ becomes very large, and the output of the sigmoid function approaches 0, similar to a perceptron not firing. The smooth transition of the sigmoid function translates to small changes in the weights and bias producing small changes in the output of the neuron. This relationship can be approximated using calculus: $\Delta \text{output} \approx \sum_j \frac{\partial \text{output}}{\partial w_j} \Delta w_j + \frac{\partial \text{output}}{\partial b} \Delta b$ where:
+● $\Delta w_j$ and $\Delta b$ represent small changes in the weights and bias, respectively.
+● $\frac{\partial \text{output}}{\partial w_j}$ and $\frac{\partial \text{output}}{\partial b}$ are the partial derivatives of the output with respect to the weights and bias.
+The smooth and continuous nature of the sigmoid function makes sigmoid neurons well-suited for gradient descent learning algorithms which we will discussed later. These algorithms rely on calculating the gradient of the cost function with respect to the weights and biases to determine how to adjust them to minimize the cost. With a step function, the cost function can change drastically with small weight adjustments, making it difficult for gradient descent to find the optimal settings.
+
+## Learning with gradient descent
+### The Cost Function
+A key concept in the learning process is the cost function, which measures how well the network is performing on the training data. A common choice for the cost function, discussed extensively in the previous turn of our conversation, is the quadratic cost function, denoted as C. The quadratic cost function calculates the average squared difference between the network's output and the desired output for each training example. Mathematically, the quadratic cost function is given by: $C = \frac{1}{2n} \sum_x ||y(x)-a^L(x)||^2$ where: 
+- n is the total number of training examples.
+- y(x) is the desired output for input x.
+- $a^L(x)$ is the actual output of the network for input x.
+- The sum is taken over all training examples x.
+The goal of learning is to find weights and biases that minimize the cost function. A lower cost indicates that the network's outputs are closer to the desired outputs, implying better performance on the training data.
+### Minimizing the Cost with Gradient Descent
+The idea behind gradient descent is to iteratively adjust the weights and biases in the direction that most rapidly decreases the cost. To understand gradient descent, it's helpful to visualize the cost function as a surface in a high-dimensional space. Each dimension of this space corresponds to a weight or bias in the network. ![[Pasted image 20241013182137.png]]
+Okay, let’s suppose we’re trying to minimize some function, $C(v)$. This could be any real-valued function of many variables, $v = v_1,v_2,....$ Note that I’ve replaced the w and b notation by v to emphasize that this could be any function– we’re not specifically thinking in the neural networks context any more.
+
+The goal is to find the lowest point on this surface, which represents the minimum cost. Gradient descent works by:
+1. Starting at a random point on the cost surface.
+2.   Calculating the gradient of the cost function at that point. The gradient indicates the direction of the steepest ascent on the surface.
+3. Moving a small step in the opposite direction of the gradient. This step is determined by the learning rate, denoted as η.
+4. Repeating steps 2 and 3 until the cost function stops decreasing significantly.
+Mathematically, the weight update rule for gradient descent is:  $w_k \rightarrow w_k' = w_k - \eta \frac{\partial C}{\partial w_k}$ where:
+- $w_k$ represents the current weight.
+- $w_k'$ represents the updated weight.
+- $\eta$ is the learning rate, which controls the size of the step taken in the direction of the negative gradient.
+- $\frac{\partial C}{\partial w_k}$ is the partial derivative of the cost function with respect to the weight $w_k$. It represents the rate of change of the cost with respect to that weight.
+### Stochastic Gradient Descent
+In practice, calculating the gradient of the cost function using the entire training set can be computationally expensive. To address this, the book introduce the concept of stochastic gradient descent, which involves estimating the gradient using a small random sample of the training data, called a mini-batch. Stochastic gradient descent offers several advantages:
+- **Computational Efficiency**: Calculating the gradient using a mini-batch is much faster than using the entire training set.
+- **Faster Learning**: The frequent updates based on mini-batches allow the network to learn more quickly.
+- **Escape from Local Minima**: The noise introduced by using mini-batches can help the algorithm escape from local minima in the cost function and find a better global minimum.
+The weight update rule for stochastic gradient descent using a mini-batch of size m is similar to that of regular gradient descent, but the gradient is calculated using the average over the mini-batch: $w_k \rightarrow w_k' = w_k - \frac{\eta}{m} \sum_{j=1}^m \frac{\partial C_{x_j}}{\partial w_k}$ where:
+- The sum is taken over the m training examples in the mini-batch.
+- $C_{x_j}$ is the cost for the individual training example $x_j$. 
+While powerful, gradient descent comes with challenges:
+- **Choosing the Learning Rate**: A learning rate that is too large can cause the algorithm to overshoot the minimum, while a learning rate that is too small can result in slow learning.
+- **Local Minima**: Gradient descent can sometimes get stuck in local minima of the cost function, failing to find the global minimum.
+# Chapter 2: How the backpropagation algorithm works
+## The two assumptions we need about the cost function
+1. The cost function can be expressed as an average over the costs of individual training examples. Mathematically, this means that the overall cost function, denoted as C, can be written as: $C = \frac{1}{n} \sum_x C_x$ where 
+	1. n represents the total number of training examples.
+	2. The sum is taken over individual training examples, denoted as x.
+	3. $C_x$ signifies the cost associated with a single training example x.
+2. The cost function can be expressed as a function of the outputs from the neural network.
+The first assumption aligns with the practical implementation of backpropagation, where we often compute the gradient of the cost function for a single training example or a small mini-batch of examples and then average those gradients to obtain an estimate of the overall gradient. By breaking down the cost function into individual contributions, backpropagation can efficiently compute the necessary gradients.
+The second assumption implies that the cost depends solely on the activations in the output layer, which are denoted as $a^L$ (where L represents the output layer). The specific form of this dependence is not constrained, allowing for various cost functions, such as the quadratic cost or the cross-entropy cost. This assumption is vital because backpropagation aims to determine how changes in the weights and biases of the network influence the output activations, and ultimately, the cost function. By ensuring that the cost depends directly on the outputs, backpropagation can trace the impact of weight and bias modifications through the network, leading to efficient gradient calculations.
+## The Hadamard product or Schur product, $s\odot t$
+The backpropagation algorithm is based on common linear algebraic operations – things like vector addition, multiplying a vector by a matrix, and soon. But one of the operations is a little less commonly used. In particular, suppose s and t are two vectors of the same dimension. Then we use $s\odot t$ to denote the element wise product of the two vectors. Thus the components of s t are just $(s \odot t)j=s_j*t_j$.As an example
+$$
+\begin{bmatrix}  
+1\\  
+2  
+\end{bmatrix}
+\odot
+\begin{bmatrix}  
+3\\  
+4  
+\end{bmatrix}
+= 
+\begin{bmatrix}  
+1*3\\  
+2*4  
+\end{bmatrix}
+=
+\begin{bmatrix}  
+3\\  
+8  
+\end{bmatrix}
+$$
+## The four fundamental equations behind backpropagation
+Before diving into the equations, the book establish the notion of error, represented as $\delta^l_j$, which quantifies the sensitivity of the cost function C to changes in the weighted input $z^l_j$ of the j-th neuron in the l-th layer.
+### Equation 1: Quantifying Output Error
+(BP1) $\delta^L = \nabla_a C \odot \sigma'(z^L)$
+This equation focuses on the output layer (denoted by L) and connects the error $\delta^L$ with how the cost function C changes with respect to the output activations. Let's break down the components:
+- $\nabla_a C$: This represents the gradient of the cost function with respect to the output activations. It's a vector where each element quantifies how much the cost changes when a specific output activation is altered.
+- $\sigma'(z^L)$: This term represents the vector obtained by applying the derivative of the sigmoid function to the weighted input $z^L$ of the output layer. It captures how sensitive the output activation is to changes in the weighted input.
+- $\odot$: The symbol denotes the Hadamard product, an element-wise multiplication of the two vectors.
+Equation (BP1) reveals that the error in the output layer is determined by how sensitive the cost function is to the output activations and how much the output activations change in response to changes in their weighted inputs.
+### Equation 2: Backpropagating the Error
+(BP2) $\delta^l = ((w^{l+1})^T \delta^{l+1}) \odot \sigma'(z^l)$
+This equation allows us to propagate the error backward through the network, moving from the output layer toward the input layer. It links the error in a given layer l with the error in the subsequent layer l+1.
+- $w^{l+1}$: This is the weight matrix governing the connections between neurons in layer l and layer l+1.
+- $(w^{l+1})^T$: Represents the transpose of the weight matrix. 
+Equation (BP2) reveals how the error in a layer is influenced by:
+- The error in the subsequent layer ($\delta^{l+1}$).
+- The weights connecting the two layers ($w^{l+1}$).
+- The sensitivity of the activation function to changes in the weighted input ($\sigma'(z^l)$).
+By combining (BP2) with (BP1) we can compute the error $\delta^{l}$ for any layer in the network. We start by using (BP1) to compute L, then apply Equation (BP2) to compute $\delta^{L-1}$, then Equation (BP2) again to compute $\delta^{L-2}$, and so on, all the way back through the network. An equation for the rate of change of the cost with respect to any bias in the net
+### Equation 3: Cost Sensitivity to Bias
+(BP3) $\frac{\partial C}{\partial b^l_j} = \delta^l_j$
+Equation (BP3) highlights the direct relationship between the error $\delta^l_j$ and the rate at which the cost function C changes with respect to the bias $b^l_j$ of a neuron. It tells us that the error of a neuron directly quantifies how much the bias of that neuron affects the overall cost. 
+### Equation 4: Cost Sensitivity to Weight
+(BP4) $\frac{\partial C}{\partial w^l_{jk}} = a^{l-1}_k \delta^l_j$
+Equation (BP4) reveals how sensitive the cost function C is to changes in a specific weight $w^l_{jk}$ connecting the k-th neuron in layer l-1 to the j-th neuron in layer l. The equation shows that this sensitivity depends on:
+- The activation of the neuron feeding into the weight ($a^{l-1}_k$).
+- The error of the neuron receiving the input from that weight ($\delta^l_j$). 
+This equation is crucial for updating the weights during the learning process. It shows that the weight update depends not only on the error of the receiving neuron but also on the activation of the sending neuron.
+## The backpropagation algorithm
+The algorithm begins with a single training example, x, and proceeds through the following steps:
+1. Input Initialization: 
+	1. The activation $a^1$ of the input layer is set to the input example x.
+2. Feedforward Computation:
+	1. For each layer l from 2 to L (where L represents the output layer), the algorithm computes:
+		1. The weighted input to the neurons: $z^l = w^l a^{l-1} + b^l$.
+		2. The activation of the neurons: $a^l = \sigma(z^l)$, where $\sigma$ represents the activation function (typically the sigmoid function).
+3. Output Error Calculation:
+	1. The error in the output layer, $\delta^L$, is computed using the first fundamental equation (BP1): $\delta^L = \nabla_a C \odot \sigma'(z^L)$.
+4. Error Backpropagation
+	1. The error is propagated backward through the network, layer by layer, from L-1 down to 2, using the second fundamental equation (BP2): $\delta^l = ((w^{l+1})^T \delta^{l+1}) \odot \sigma'(z^l)$.
+5. Gradient Computation
+	1. The partial derivatives of the cost function with respect to each weight and bias are calculated using the third (BP3) and fourth (BP4) fundamental equations:
+		1.  $\frac{\partial C}{\partial b^l_j} = \delta^l_j$
+		2. $\frac{\partial C}{\partial w^l_{jk}} = a^{l-1}_k \delta^l_j$
+### Backpropagation with Stochastic Gradient Descent
+In practice, backpropagation is typically combined with stochastic gradient descent (SGD). Instead of computing the gradient for a single training point, SGD uses a mini-batch of m training examples to estimate the overall gradient. This approach offers significant computational advantages, as discussed in our previous conversation. The backpropagation algorithm for a mini-batch proceeds as follows:
+- Input a Set of Training Examples:
+	- A mini-batch of training examples is selected.
+- Gradient Calculation for Each Example:
+	- For each training example x in the mini-batch, the algorithm performs steps 1-5 described above to compute the gradient for that example.
+- Gradient Descent Update:
+	- For each layer l from L down to 2, the weights and biases are updated using the average gradient over the mini-batch:
+		- $w^l \rightarrow w^l - \frac{\eta}{m} \sum_x \delta^{x,l}(a^{x,l-1})^T$
+		- $b^l \rightarrow b^l - \frac{\eta}{m} \sum_x \delta^{x,l}$
+where: 
+- $\eta$ is the learning rate.
+- The sums are taken over all training examples x in the mini-batch.
+- $\delta^{x,l}$ and $a^{x,l-1}$ represent the error and activation for example x in layer l, respectively
+
+
 # Chapter 6 Deep learning 
 ## Convolutional Neural Networks
 These networks use a special architecture which is particularly well-adapted to classify images. Using this architecture makes convolutional networks fast to train. This, in turn, helps us train deep, many-layer networks, which are very good at classifying images.  Convolutional neural networks use three basic ideas: local receptive fields, shared weights, and pooling. 

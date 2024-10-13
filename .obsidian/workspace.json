@@ -11,8 +11,12 @@
             "id": "f5496a1d3cd64006",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "Masters/Deep learning/Deep learning notes.md",
+                "mode": "source",
+                "source": false
+              }
             }
           }
         ]
@@ -65,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "35e3bf0212ccb671",
@@ -92,6 +97,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Masters/Deep learning/Deep learning notes.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -102,7 +108,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Masters/Deep learning/Deep learning notes.md"
+              }
             }
           },
           {
@@ -111,6 +119,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Masters/Deep learning/Deep learning notes.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -131,7 +140,6 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "omnisearch:Omnisearch": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
@@ -140,8 +148,17 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "1d91021c702c5d9e",
+  "active": "f5496a1d3cd64006",
   "lastOpenFiles": [
+    "Masters/Deep learning/Week 1.md",
+    "Masters/Deep learning/Deep learning notes.md",
+    "Pasted image 20241013182137.png",
+    "Pasted image 20241013173017.png",
+    "Pasted image 20241013173004.png",
+    "Masters/Deep learning/Untitled.md",
+    "Masters/Deep learning/Random notes.md",
+    "Masters/Deep learning/Exercises.md",
+    "Masters/Computational tools for data science/Computational Tools for Data Science week 1.md",
     "attachments/459675197_447036095153319_2728929346993351220_n.jpg",
     "attachments",
     "Masters/Logical Theories for Uncertainty and Learning/attachments/{FC5E1A91-F6CF-4CAF-8602-412CE403DF51}.png",
@@ -150,10 +167,6 @@
     "Masters/Logical Theories for Uncertainty and Learning/attachments/{EC4AECCC-07A9-4C99-B166-16AFDDF7E6DF}.png",
     "Masters/Logical Theories for Uncertainty and Learning/attachments/{BF1AC494-D854-4220-A8AC-01CE1D1C1D1A}.png",
     "Masters/Logical Theories for Uncertainty and Learning/attachments/{CFDBAD5A-1144-4142-9717-F456D99B2E3C}.png",
-    "Masters/Logical Theories for Uncertainty and Learning/attachments/{B5679655-FA9B-41B7-B4A5-452F9E0B657E}.png",
-    "Masters/Logical Theories for Uncertainty and Learning/attachments/{A96AE77F-AF81-4DFF-B4D0-E5A399D70181}.png",
-    "Masters/Logical Theories for Uncertainty and Learning/attachments/{B292F038-8664-4585-8B7E-5953BD6F4381}.png",
-    "Masters/Logical Theories for Uncertainty and Learning/attachments/{9637E0BB-BA4C-4C3E-9914-9B2397AE0CF8}.png",
     "Masters/Logical Theories for Uncertainty and Learning/Exercises.md",
     "Masters/Logical Theories for Uncertainty and Learning/Logical Theories For Uncertainty and Learning.md",
     "Masters/Social Graph interactions/Graph Theory.md",
@@ -161,13 +174,7 @@
     "Masters/UX design prototyping/Week 2 notes.md",
     "Masters/Social Graph interactions/attachments",
     "Masters/UX design prototyping/attachments",
-    "Masters/Deep learning/Week 1.md",
-    "Masters/Deep learning/Untitled 1.md",
-    "Masters/Deep learning/Untitled.md",
-    "Masters/Deep learning/Random notes.md",
-    "Masters/Deep learning/Exercises.md",
     "Masters/Deep learning/attachments",
-    "Masters/Computational tools for data science/Computational Tools for Data Science week 1.md",
     "Masters/Computational tools for data science/attachments",
     "Masters/Logical Theories for Uncertainty and Learning",
     "Masters/Social Graph interactions",
