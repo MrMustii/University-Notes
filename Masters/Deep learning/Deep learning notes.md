@@ -1,3 +1,4 @@
+NOTES FROM [Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/)  BOOK
 # Chapter 1 Using neural nets to recognize handwritten digits 
 
 ## Perceptrons 
@@ -159,6 +160,145 @@ where:
 - $\delta^{x,l}$ and $a^{x,l-1}$ represent the error and activation for example x in layer l, respectively
 
 
+# Chapter 3: Improving the way neural networks learn
+## The Cross-Entropy Cost Function
+### The Learning Slowdown Problem
+![[Pasted image 20241014162003.png]]
+Single Neuron Toy Model
+It shows that with the quadratic cost function, the neuron learns very slowly when the initial weight and bias are set such that the neuron's initial output is far from the desired output. Specifically, the graph in shows that learning starts slowly when both the weight and bias are initialized to 2.0. This slow learning occurs because the partial derivative of the quadratic cost function with respect to the weights includes a term, σ′(z), which becomes very small when the neuron is saturated, that is, when the output is close to 0 or 1. 
+![[Pasted image 20241014162621.png]] 
+Starts the weight and bias 0.6 and 0.9 respectively
+![[Pasted image 20241014162804.png]]
+the starting weight and bias 2.0 
+The desired output for both is 0
+### Introducing the Cross-Entropy Cost Function
+To overcome this learning slowdown, the subchapter introduces the cross-entropy cost function. For a single neuron with multiple inputs, the cross-entropy cost function is defined as:
+
+$C = -\frac{1}{n} \sum_x [y \ln a + (1 - y) \ln(1 - a)]$ (57) Where
+- n is the total number of training data items.
+- The sum is over all training inputs, x.
+- y is the corresponding desired output.
+- a is the actual output of the neuron.
+#### Benefits 
+- Non-negativity: The cross-entropy, C, is always greater than or equal to 0. This is because all the individual terms in the sum in (57) are negative (as the logarithms are of numbers between 0 and 1) and there is a minus sign in front of the sum.
+- Approaches zero as neuron's performance improves: As the neuron gets better at computing the desired output, y, for all training inputs, x, the cross-entropy cost, C, decreases towards zero. This behavior is consistent with what is intuitively expected of a cost function.
+- Avoids the learning slowdown problem: The cross-entropy cost function overcomes the learning slowdown problem. This is because the $\sigma′(z)$ term, which was responsible for the slowdown with the quadratic cost function, is canceled out when the partial derivative of the cross-entropy cost with respect to the weights is calculated. This cancellation results in a simplified expression: $\frac{\partial C}{\partial w_j} = \frac{1}{n} \sum_x x_j (\sigma(z) - y)$ 
+This expression demonstrates that the rate at which a weight learns is determined by the error in the output, denoted by (σ(z) - y). Thus, the larger the error, the faster the learning. The equation for the partial derivative of the cost with respect to the bias also avoids the $\sigma′(z)$ term, further contributing to overcoming the learning slowdown.
+
+One way to understand the origin of the cross-entropy is by considering the objective of finding a cost function that eliminates the $\sigma′(z)$ term from the gradient. By establishing equations for the desired partial derivatives of the cost function, applying the chain rule, and integrating, we can naturally derive the form of the cross-entropy function.
+
+The cross-entropy can also be interpreted through the lens of information theory as a measure of “surprise.” In this view, the neuron's output is considered its estimated probability distribution for the desired output. The cross-entropy then quantifies the average "surprise" experienced upon learning the true output.
+### Softmax
+The softmax function normalizes a vector of input values into a probability distribution where each value's probability is proportional to the exponential of the input value. When used with the log-likelihood cost function, a softmax output layer exhibits similar behavior to a sigmoid output layer using the cross-entropy cost, effectively preventing learning slowdown.
+
+## Overfitting and regularization 
+### The Problem of Overfitting
+The book begin by highlighting that neural networks, particularly large ones, can have a large number of parameters (weights and biases). For instance, the 30 hidden neuron network for MNIST digit classification has nearly 24,000 parameters, while the 100 hidden neuron network has nearly 80,0001. This raises concerns about the network's ability to generalize well to new, unseen data.
+
+![[Pasted image 20241014170711.png]]
+This looks encouraging, showing a smooth decrease in the cost, just as we expect. Note that I've only shown training epochs 200 through 399. This gives us a nice up-close view of the later stages of learning, which, as we'll see, turns out to be where the interesting action is.
+Let's now look at how the classification accuracy on the test data changes over time:
+
+![[Pasted image 20241014170745.png]]
+The accuracy rises to just under 82 percent. The learning then gradually slows down. Finally, at around epoch 280 the classification accuracy pretty much stops improving. Later epochs merely see small stochastic fluctuations near the value of the accuracy at epoch 280. Contrast this with the earlier graph, where the cost associated to the training data continues to smoothly drop. If we just look at that cost, it appears that our model is still getting "better". But the test accuracy results show the improvement is an illusion. Just like the model that Fermi disliked, what our network learns after epoch 280 no longer generalizes to the test data. And so it's not useful learning. We say the network is _overfitting_ or _overtraining_ beyond epoch 280.
+
+What would happen if we compared the cost on the training data with the cost on the test data, so we're comparing similar measures? Or perhaps we could compare the classification accuracy on both the training data and the test data? In fact, essentially the same phenomenon shows up no matter how we do the comparison. The details do change, however. For instance, let's look at the cost on the test data:
+![[Pasted image 20241014171135.png]]
+Another sign of overfitting may be seen in the classification accuracy on the training data
+![[Pasted image 20241014171233.png]]
+The accuracy rises all the way up to 100 percent. That is, our network correctly classifies all 1,000training images! Meanwhile, our test accuracy tops out at just 82.27 percent. So our network really is learning about peculiarities of the training set, not just recognizing digits in general. It's almost as though our network is merely memorizing the training set, without understanding digits well enough to generalize to the test set.
+
+### Detect overfitting
+keeping track of accuracy on the test data as our network trains. If we see that the accuracy on the test data is no longer improving, then we should stop training. Of course, strictly speaking, this is not necessarily a sign of overfitting. It might be that accuracy on the test data and the training data both stop improving at the same time. Still, adopting this strategy will prevent overfitting.
+
+### Early stopping
+Using the validation data we'll compute the classification accuracy on the validation data at the end of each epoch. Once the classification accuracy on the validation data has saturated, we stop training. Of course, in practice we won't immediately know when the accuracy has saturated. Instead, we continue training until we're confident that the accuracy has saturated. Keep in mind that neural networks sometimes plateau for a while in training, before continuing to improve  
+
+### Regularization
+Regularization techniques are designed to prevent this overfitting by adding constraints to the learning process, essentially guiding the network towards learning more general patterns rather than memorizing specific examples.
+Regularization works by :
+- **Penalizing Complexity:** Most regularization techniques work by adding a penalty term to the network's cost function. The cost function measures how well the network is performing; a lower cost generally means better performance. By adding a penalty term, we make the network pay a price for having large weights, which often correspond to overly complex models
+- **Encouraging Simplicity**: This penalty encourages the network to find a balance between minimizing the original cost (fitting the training data well) and keeping the weights small (avoiding excessive complexity). This balance helps the network learn more general patterns, leading to better generalization
+### Types of Regularization
+
+- L2 Regularization (Weight Decay)
+	- The Formula: In L2 regularization, we add a term to the cost function that is proportional to the sum of the squares of all the weights in the network. This term is scaled by a factor called the regularization parameter (λ).
+	- The Effect: This penalty discourages the network from having large weights, effectively pushing the weights towards smaller values. Smaller weights generally correspond to simpler models that are less prone to overfitting.
+	- The Intuition: Imagine pulling on a rubber band connected to each weight in the network. The rubber band tries to pull each weight towards zero. The stronger the rubber band (larger λ), the harder it pulls, leading to smaller weights.
+- L1 Regularization
+	- The Formula: Similar to L2 regularization, but instead of squaring the weights, we add the sum of their absolute values to the cost function.
+	- The Effect: L1 regularization also encourages small weights, but it tends to drive many weights all the way to zero, effectively creating a sparse network where only a few connections are strong. This can be useful for feature selection, as it highlights the most important connections
+- Dropout 
+	- The Concept: Dropout is a more radical approach where we randomly "drop out" (deactivate) a portion of the hidden neurons during each training iteration.
+	- The Effect: This forces the network to learn more robust features that are not dependent on any single neuron. By learning to generalize even with missing neurons, the network becomes less reliant on specific examples and more adaptable to new data
+	- The Intuition: It's like training a team where each member has to be prepared to step up if others are unavailable. This encourages individual strength and adaptability, making the team more resilient overall.
+- Artificially Expanding the Training Data
+	- The Idea: Instead of modifying the network or the cost function, we can increase the size of the training dataset by creating variations of the existing examples
+	- The Approach: This can involve techniques like rotating, skewing, or translating images, adding noise to audio data, or generating synthetic data based on the existing examples.
+	- The Benefit: By exposing the network to a more diverse range of examples, we help it learn more robust and generalizable features, reducing overfitting.
+
+
+
+## Weight initialization 
+Saturation occurs when the output of an activation function is very close to its maximum or minimum value, resulting in very small gradients and slow learning. Consider a network with 1,000 input neurons where normalized Gaussians are used to initialize the weights connecting to the first hidden layer. If the inputs to the network are also normalized Gaussian random variables, each of the 1,000 weighted inputs to the first hidden layer will also be a Gaussian random variable with a mean of 0 and a standard deviation of approximately 1. This means that it is highly probable for a large number of weighted inputs to the activation function to fall in the region where the sigmoid function is very flat, leading to very slow learning. This issue of saturation and slow learning is not resolved by using a different cost function like cross-entropy, as this solution only addresses saturated output neurons and not saturated hidden neurons. Saturation in later hidden layers can also occur if weights are initialized using normalized Gaussians.
+
+An Improved initialization approach to prevent saturation and the resulting slowdown in learning is for a neuron with n<sub>in</sub> input weights, this method initializes those weights as Gaussian random variables with a mean of 0 and a standard deviation of 1/√n<sub>in</sub>. This squashes the Gaussians, making saturation less likely. The bias can continue to be chosen as a Gaussian with a mean of 0 and a standard deviation of 1. Using this method with the example 1,000 input neuron network results in each of the weighted sums being a Gaussian random variable with a mean of 0 and a standard deviation of √3/2, which is much less likely to saturate than a neuron with a standard deviation of 1.
+
+In the improved initialization method, the bias can be initialized as Gaussian random variables with a mean of 0 and a standard deviation of 1 because this does not significantly increase the likelihood of saturation. In fact, the initialization of the biases doesn't have a large impact as long as saturation is avoided.
+
+## How to choose a neural network's hyper-parameters?
+**Broad strategy:** When using neural networks to attack a new problem the first challenge is to get _any_ non-trivial learning, i.e., for the network to achieve results better than chance. This can be surprisingly difficult, especially when confronting a new class of problem. Let's look at some strategies you can use if you're having this kind of trouble.
+
+Example, in the MNIST  Get rid of all the training and validation images except images which are 0s or 1s. Then try to train a network to distinguish 0s from 1s. Not only is that an inherently easier problem than distinguishing all ten digits, it also reduces the amount of training data by 80 percent, speeding up training by a factor of 5. That enables much more rapid experimentation, and so gives you more rapid insight into how to build a good network.
+
+Start a smaller networks. If you believe a \[784, 10\] network can likely do better-than-chance classification of MNIST digits, then begin your experimentation with such a network. It'll be much faster than training a \[784, 30, 10\] network, and you can build back up to the latter.
+
+You can get another speed up in experimentation by increasing the frequency of monitoring.  We can get feedback more quickly by monitoring the validation accuracy more often, say, after every 1,000 training images. instead of every epoch (in MNIST there are 50000 images). Furthermore, instead of using the full 10,000 image validation set to monitor performance, we can get a much faster estimate using just 100 validation images.
+
+Once we've explored to find an improved value for η, then we move on to find a good value for λ. Then experiment with a more complex architecture, say a network with 10 hidden neurons. Then adjust the values for η and λ again. Then increase to 20 hidden neurons. And then adjust other hyper-parameters some more.
+
+### Learning rate
+**Learning rate:** Suppose we run three MNIST networks with three different learning rates, η=0.025η=0.025, η=0.25η=0.25 and η=2.5η=2.5, respectively. We'll set the other hyper-parameters as for the experiments in earlier sections, running over 30 epochs, with a mini-batch size of 10, and with λ=5.0λ=5.0. We'll also return to using the full 50,00050,000 training images. Here's a graph showing the behaviour of the training cost as we train
+![[Pasted image 20241014185714.png]]
+ To understand the reason for the oscillations, recall that stochastic gradient descent is supposed to step us gradually down into a valley of the cost function, However, if η is too large then the steps will be so large that they may actually overshoot the minimum, causing the algorithm to climb up out of the valley instead. 
+
+First, we estimate the threshold value for η at which the cost on the training data immediately begins decreasing, instead of oscillating or increasing. This estimate doesn't need to be too accurate. You can estimate the order of magnitude by starting with η=0.01. If the cost decreases during the first few epochs, then you should successively try η=0.1,1.0,…until you find a value for η where the cost oscillates or increases during the first few epochs. This gives us an estimate for the threshold value of η.
+
+Obviously, the actual value of η that you use should be no larger than the threshold value. In fact, if the value of η is to remain usable over many epochs then you likely want to use a value for η that is smaller, say, a factor of two below the threshold. Such a choice will typically allow you to train for many epochs, without causing too much of a slowdown in learning.
+
+### The number of training epochs
+Early stopping means that at the end of each epoch we should compute the classification accuracy on the validation data. When that stops improving, terminate. This makes setting the number of epochs very simple. In particular, it means that we don't need to worry about explicitly figuring out how the number of epochs depends on the other hyper-parameters. Instead, that's taken care of automatically. Furthermore, early stopping also automatically prevents us from overfitting. This is, of course, a good thing, although in the early stages of experimentation it can be helpful to turn off early stopping, so you can see any signs of overfitting, and use it to inform your approach to regularization.
+
+To implement early stopping we need to say more precisely what it means that the classification accuracy has stopped improving. As we've seen, the accuracy can jump around quite a bit, even when the overall trend is to improve. If we stop the first time the accuracy decreases then we'll almost certainly stop when there are more improvements to be had. A better rule is to terminate if the best classification accuracy doesn't improve for quite some time. Then we might elect to terminate if the classification accuracy hasn't improved during the last ten epochs. This ensures that we don't stop too soon, in response to bad luck in training, but also that we're not waiting around forever for an improvement that never comes. using the no-improvement-in-ten rule for initial experimentation, and gradually adopting more lenient rules, as you better understand the way your network trains: no-improvement-in-twenty, no-improvement-in-fifty, and so on. Of course, this introduces a new hyper-parameter to optimize!. 
+
+### Learning rate schedule 
+ We've been holding the learning rate ηη constant. However, it's often advantageous to vary the learning rate. Early on during the learning process it's likely that the weights are badly wrong. And so it's best to use a large learning rate that causes the weights to change quickly. Later, we can reduce the learning rate as we make more fine-tuned adjustments to our weights.
+
+Many approaches are possible. One natural approach is to use the same basic idea as early stopping. The idea is to hold the learning rate constant until the validation accuracy starts to get worse. Then decrease the learning rate by some amount, say a factor of two or ten. We repeat this many times, until, say, the learning rate is a factor of 1,024 (or 1,000) times lower than the initial value. Then we terminate.
+
+### The regularization parameter, λ
+Start initially with no regularization (λ=0.0), and determining a value for η, as above. Using that choice of η, we can then use the validation data to select a good value for λ. Start by trialling λ=1.0 and then increase or decrease by factors of 10, as needed to improve performance on the validation data. Once you've found a good order of magnitude, you can fine tune your value of λ. That done, you should return and re-optimize η again. 
+
+### Mini-batch size
+ first suppose that we're doing online learning, i.e., that we're using a mini-batch size of 1. The obvious worry about online learning is that using mini-batches which contain just a single training example will cause significant errors in our estimate of the gradient. In fact, though, the errors turn out to not be such a problem. The reason is that the individual gradient estimates don't need to be super-accurate. All we need is an estimate accurate enough that our cost function tends to keep decreasing. It's as though you are trying to get to the North Magnetic Pole, but have a wonky compass that's 10-20 degrees off each time you look at it. Provided you stop to check the compass frequently, and the compass gets the direction right on average, you'll end up at the North Magnetic Pole just fine.
+
+Choosing the best mini-batch size is a compromise. Too small, and you don't get to take full advantage of the benefits of good matrix libraries optimized for fast hardware. Too large and you're simply not updating your weights often enough. What you need is to choose a compromise value which maximizes the speed of learning. Fortunately, the choice of mini-batch size at which the speed is maximized is relatively independent of the other hyper-parameters (apart from the overall architecture).  The way to go is therefore to use some acceptable (but not necessarily optimal) values for the other hyper-parameters, and then trial a number of different mini-batch sizes, scaling η as above. Plot the validation accuracy versus _time_ (as in, real elapsed time, not epoch!), and choose whichever mini-batch size gives you the most rapid improvement in performance. With the mini-batch size chosen you can then proceed to optimize the other hyper-parameters.
+
+
+**Summing up:** Following the rules-of-thumb described won't give you the absolute best possible results from your neural network. But it will likely give you a good start and a basis for further improvements. In particular, I've discussed the hyper-parameters largely independently. In practice, there are relationships between the hyper-parameters. You may experiment with η, feel that you've got it just right, then start to optimize for λ, only to find that it's messing up your optimization for η. In practice, it helps to bounce backward and forward, gradually closing in good values. Above all, keep in mind that the heuristics I've described are rules of thumb, not rules cast in stone. You should be on the lookout for signs that things aren't working, and be willing to experiment. In particular, this means carefully monitoring your network's behaviour, especially the validation accuracy.
+
+## Other techniques
+
+While stochastic gradient descent (SGD) is a powerful and widely used algorithm for training neural networks, the book acknowledges that other optimization techniques may offer superior performance in some situations.
+
+- Hessian Technique: This technique utilizes the Hessian matrix, which contains information about the second-order partial derivatives of the cost function. This additional information can help the Hessian approach converge faster and avoid some issues that can arise with standard gradient descent. However, the source notes that computing the Hessian matrix can be computationally expensive, particularly for large networks.
+
+- Momentum Technique: This technique introduces a "momentum" term that helps the algorithm build up speed as it moves down the gradient. This can help the algorithm avoid getting stuck in local minima and converge more quickly. The momentum term is controlled by a hyper-parameter, µ, which is typically set to a value between 0 and 1.
+
+The book also briefly mentions other optimization techniques, including conjugate gradient descent, the BFGS method, and Nesterov's accelerated gradient technique. However, the source states that plain SGD, particularly with the momentum technique, works well for many problems and remains the primary optimization method used throughout the book.
+
+
+
 # Chapter 6 Deep learning 
 ## Convolutional Neural Networks
 These networks use a special architecture which is particularly well-adapted to classify images. Using this architecture makes convolutional networks fast to train. This, in turn, helps us train deep, many-layer networks, which are very good at classifying images.  Convolutional neural networks use three basic ideas: local receptive fields, shared weights, and pooling. 
@@ -251,9 +391,6 @@ The key insights from this chapter can be applied to a wide range of deep learni
 - **Dropout Regularization**: Dropout remains a powerful regularization technique, especially in networks prone to overfitting. It can be applied to fully connected layers in almost any neural network architecture to improve generalization. However, it is unnecessary in convolutional layers where shared weights provide enough regularization.
     
 - **Ensemble Methods**: Combining several trained models to vote on predictions is a general technique applicable to most machine learning problems, particularly when marginal gains in accuracy are needed.
-    
-
-The iterative process discussed in this chapter, from simple models to more complex architectures, demonstrates how thoughtful modifications can significantly enhance performance, a lesson applicable in various deep learning applications.
 
 ## Recurrent Neural Networks 
 ![]({BB5D6B0F-7937-45FB-AF2E-9518C804B2A5}.png)

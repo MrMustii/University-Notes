@@ -11,6 +11,16 @@
             "id": "f5496a1d3cd64006",
             "type": "leaf",
             "state": {
+              "type": "image",
+              "state": {
+                "file": "Masters/Deep learning/attachments/Pasted image 20241013173004.png"
+              }
+            }
+          },
+          {
+            "id": "bde3909bad9daa2a",
+            "type": "leaf",
+            "state": {
               "type": "markdown",
               "state": {
                 "file": "Masters/Deep learning/Deep learning notes.md",
@@ -19,7 +29,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -69,8 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "35e3bf0212ccb671",
@@ -148,25 +158,27 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "f5496a1d3cd64006",
+  "active": "1d91021c702c5d9e",
   "lastOpenFiles": [
-    "Masters/Deep learning/Week 1.md",
+    "Masters/Deep learning/attachments/Pasted image 20241014185714.png",
+    "Masters/Deep learning/attachments/Pasted image 20241013173004.png",
+    "Masters/Deep learning/attachments/Pasted image 20241013173017.png",
     "Masters/Deep learning/Deep learning notes.md",
-    "Pasted image 20241013182137.png",
-    "Pasted image 20241013173017.png",
-    "Pasted image 20241013173004.png",
+    "Masters/Deep learning/attachments/Pasted image 20241014171233.png",
+    "Masters/Deep learning/attachments/Pasted image 20241014171135.png",
+    "Masters/Deep learning/attachments/Pasted image 20241014170745.png",
+    "Masters/Deep learning/attachments/Pasted image 20241014170720.png",
+    "Masters/Deep learning/attachments/Pasted image 20241014170711.png",
+    "Masters/Deep learning/attachments/Pasted image 20241014162804.png",
+    "Masters/Deep learning/attachments/Pasted image 20241014162621.png",
+    "Masters/Deep learning/attachments/Pasted image 20241014162003.png",
+    "neuralnetworksanddeeplearning.md",
+    "Masters/Deep learning/Week 1.md",
     "Masters/Deep learning/Untitled.md",
     "Masters/Deep learning/Random notes.md",
     "Masters/Deep learning/Exercises.md",
     "Masters/Computational tools for data science/Computational Tools for Data Science week 1.md",
-    "attachments/459675197_447036095153319_2728929346993351220_n.jpg",
     "attachments",
-    "Masters/Logical Theories for Uncertainty and Learning/attachments/{FC5E1A91-F6CF-4CAF-8602-412CE403DF51}.png",
-    "Masters/Logical Theories for Uncertainty and Learning/attachments/{EE06DF7E-40A4-4E69-8F26-BE2300EE4010}.png",
-    "Masters/Logical Theories for Uncertainty and Learning/attachments/{DF38675F-BBDA-4CDB-91E1-170E4EAD1FB1}.png",
-    "Masters/Logical Theories for Uncertainty and Learning/attachments/{EC4AECCC-07A9-4C99-B166-16AFDDF7E6DF}.png",
-    "Masters/Logical Theories for Uncertainty and Learning/attachments/{BF1AC494-D854-4220-A8AC-01CE1D1C1D1A}.png",
-    "Masters/Logical Theories for Uncertainty and Learning/attachments/{CFDBAD5A-1144-4142-9717-F456D99B2E3C}.png",
     "Masters/Logical Theories for Uncertainty and Learning/Exercises.md",
     "Masters/Logical Theories for Uncertainty and Learning/Logical Theories For Uncertainty and Learning.md",
     "Masters/Social Graph interactions/Graph Theory.md",
@@ -194,7 +206,6 @@
     "Bachelors/Y3S2_Database_Systems/SQL.md",
     "Bachelors/Bachelor Project/MVVM.md",
     "Bachelors/Bachelor Project/BLE.md",
-    "Masters-Notes/Masters/Logical Theories for Uncertainty and Learning/Logical Theories For Uncertainty and Learning.md",
     "Untitled.canvas"
   ]
 }
