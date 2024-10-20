@@ -1,5 +1,7 @@
-NOTES FROM [Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/)  BOOK
-# Chapter 1 Using neural nets to recognize handwritten digits 
+NOTES FROM [Neural Networks and Deep Learning](http://neuralnetworksanddeeplearning.com/)  \[NNDL\]
+NOTES FROM [Speech and Language Processing](https://web.stanford.edu/~jurafsky/slp3/) \[SLP\]
+NOTES FROM [Deep Learning](https://www.deeplearningbook.org/) \[DLB\]
+# \[NNDL\] Chapter 1 Using neural nets to recognize handwritten digits 
 
 ## Perceptrons 
 - **Input and Output**: Perceptrons take multiple binary inputs, denoted as $x_1$, $x_2$, etc (0 or 1) and produce a single binary output (0 or 1)
@@ -68,7 +70,7 @@ The weight update rule for stochastic gradient descent using a mini-batch of siz
 While powerful, gradient descent comes with challenges:
 - **Choosing the Learning Rate**: A learning rate that is too large can cause the algorithm to overshoot the minimum, while a learning rate that is too small can result in slow learning.
 - **Local Minima**: Gradient descent can sometimes get stuck in local minima of the cost function, failing to find the global minimum.
-# Chapter 2: How the backpropagation algorithm works
+# \[NNDL\] Chapter 2: How the backpropagation algorithm works
 ## The two assumptions we need about the cost function
 1. The cost function can be expressed as an average over the costs of individual training examples. Mathematically, this means that the overall cost function, denoted as C, can be written as: $C = \frac{1}{n} \sum_x C_x$ where 
 	1. n represents the total number of training examples.
@@ -160,7 +162,7 @@ where:
 - $\delta^{x,l}$ and $a^{x,l-1}$ represent the error and activation for example x in layer l, respectively
 
 
-# Chapter 3: Improving the way neural networks learn
+# \[NNDL\] Chapter 3: Improving the way neural networks learn
 ## The Cross-Entropy Cost Function
 ### The Learning Slowdown Problem
 ![[Pasted image 20241014162003.png]]
@@ -299,7 +301,7 @@ The book also briefly mentions other optimization techniques, including conjugat
 
 
 
-# Chapter 6 Deep learning 
+# \[NNDL\] Chapter 6 Deep learning 
 ## Convolutional Neural Networks
 These networks use a special architecture which is particularly well-adapted to classify images. Using this architecture makes convolutional networks fast to train. This, in turn, helps us train deep, many-layer networks, which are very good at classifying images.  Convolutional neural networks use three basic ideas: local receptive fields, shared weights, and pooling. 
 ### Local receptive fields
@@ -392,7 +394,149 @@ The key insights from this chapter can be applied to a wide range of deep learni
     
 - **Ensemble Methods**: Combining several trained models to vote on predictions is a general technique applicable to most machine learning problems, particularly when marginal gains in accuracy are needed.
 
-## Recurrent Neural Networks 
+
+
+# Language Modelling and Transformers 
+## Text to vectors 
+### Tokenization
+Text can be decomposed into various types of units or *tokens*: characters, syllables, words or even sentences. Each tokenization system comes with vocabulary $\mathcal{V}$ that references all known symbols. 
+
+The choice of tokenizer is a tradeoff between the size of the vocabulary and the number of tokens required to encode a sentence. For instance, character-level tokenizers result in a smaller vocabulary size (only 128 character when using ASCII encoding) than other tokenizers. Word-based tokenizers encode text using fewer tokens than the other tokenizers but require a much larger vocabulary, which still might miss words seen at test time. Sub-words tokenizers such as [WordPiece](https://arxiv.org/abs/2012.15524) and [byte-pair encoding (BPE)](https://arxiv.org/abs/1508.07909) are a tradeoff between character-level and word-level encoding. They have progressively taken over the field as they provide two main advantages: (i) good tradeoff between vocabulary size and encoding length, (ii) open-ended vocabulary.
+
+
+### Embeddings
+A tokenizer transforms fragments of text into list of integers that maps a vocabulary. We assign one vector of dimension $d$ to each item in the vocabulary of size $N_\mathcal{V}$, this results in a matrix $E$ of dimension ${N_\mathcal{V} \times d}$. Converting a fragment of text into a sequence of vector representations can be done by tokenizing the text, and then looking up the embedding vector for each token, which is equivalent to *one-hot encoding* the tokens and performing a matrix multiplication using $E$. Given $\mathbf{t}_1, \ldots, \mathbf{t}_L$ the sequence of one-hot encoded tokens, this is equivalent to
+
+$$
+
+\mathbf{w}_i = E  \mathbf{t}_i ,
+
+$$
+
+The first step is to break down a text into  tokens. Each token is then mapped to a unique integer from the tokenizer's vocabulary. For example, if the vocabulary has 50,000 words, each token gets assigned an integer between 1 and 50,000.
+
+For instance, consider the sentence:
+
+**"Hello World!"**
+
+After tokenization, it might be converted into tokens like `["hello", "world", "!"]`, and each token is mapped to an integer (Using BPE):
+- "hello" → 7592
+- "world" → 2088
+- "!" → 999
+Once we have these tokens as integers, we use an **embedding matrix** to convert them into vectors. The embedding matrix, denoted as $E$, is a large matrix where each row corresponds to the vector representation of a token in the vocabulary. If the vocabulary contains $N_\mathcal{V}$ tokens, and each token is represented by a vector of length $d$ (the embedding dimension), the matrix $E$ will have dimensions $N_\mathcal{V} \times d$. For example, if we have a vocabulary size of 50,000 and we want 300-dimensional embeddings, the matrix $E$ will be $50,000 \times 300$. 
+
+To convert tokens into their vector representations, we perform an operation similar to **one-hot encoding**. Each token is represented as a one-hot vector, where all entries are 0 except for the position corresponding to the token's index in the vocabulary.
+
+Once we have the one-hot encoded vector, we multiply it by the embedding matrix $E$ to get the corresponding embedding vector. The one-hot vector essentially "selects" the row of the matrix that corresponds to the token's index. This multiplication can be written as:
+
+$$
+\mathbf{w}_i = E  \mathbf{t}_i 
+$$
+where - $\mathbf{t}_i$ is the one-hot encoded vector for the $i$-th token.
+
+For example, for the token "hello", this multiplication retrieves the 7529-th row of the embedding matrix $E$, which is the embedding vector corresponding to "hello". This vector might look something like this: $W_{hello}=[0.2,−0.5,0.1,…,0.7]$
+### World vectors
+![[Pasted image 20241016161815.png]]
+Word2vec converts words into vector representations, which are learned using the Skip-Gram algorithm. Intuitively, The algorithm is based on the idea that words that appear together are related to each other.
+
+The word vector space allows to use the inner product to compare words (dot product), and arithmetic operations to manipulate word representations. For instance, in a well-defined word vector space, the concept "king" can be translated into "queen" by applying a linear transformation and the vector. `vec("captial") - vec("country")` was found to correspond to the relative concept `"capital city of a country"` . 
+## Language Models 
+### Language Modelling
+**Autoregressive factorization** Language models aim at grasping the underlying linguistic structure of a text fragment: whereas word vectors model words independently of each others, a language model tracks the grammatical and semantic relationships between word tokens. Given a piece of text encoded into tokens $\mathbf{w}_{1:T} = [\mathbf{w_1}, \ldots, \mathbf{w}_T]$ a *left-to-right* language model describes $\mathbf{w}_{1:T}$ with the following factorization:
+
+$$
+
+ p_\theta(\mathbf{w}_{1:T}) = \prod_{t=1}^T p_\theta(\mathbf{w}_t \mid \mathbf{w}_{<t}) \ ,
+
+$$
+
+where $\theta$ is a model parameter. The above *autoregressive* factorization describes a *recursive* function $p_\theta(\mathbf{w}_t \mid \mathbf{w}_{<t})$, which is shared across all the time steps. In the above figure, we represent a left-to-right language model with dependencies represented by arrows for fixed steps $t=3$ and $t=4$. Because of this choice of factorization, a language model defines a graphical model where each step $t$ depends on all the previous steps $<t$ and the conditional $p_\theta(\mathbf{w}_t \mid \mathbf{w}_{<t})$ models the dependendies between the context $\mathbf{w}_{<t}$ and the variable $\mathbf{w}_t$.
+?????????????????????????????????????????????????????????????????????????????????????????
+
+## \[SLP\] Recurrent Neural Networks 
+A recurrent neural network (RNN) is any network that contains a cycle within its network connections, meaning that the value of some unit is directly, or indirectly, dependent on its own earlier outputs as an input. 
+
+### Basic RNN
+![[Pasted image 20241016194722.png]]
+
+The figure above illustrates the structure of an RNN. As with ordinary feedforward networks, an input vector representing the current input, $x_t$ , is multiplied by a weight matrix and then passed through a non-linear activation function to compute the values for a layer of hidden units. This hidden layer is then used to calculate a corresponding output, $y_t$ . Sequences are processed by presenting one item at a time to the network. We’ll use subscripts to represent time, thus $x_t$ will mean the input vector x at time t. The key difference from a feedforward network lies in the recurrent link shown in the figure with the dashed line. This link augments the input to the computation at the hidden layer with the value of the hidden layer from the preceding point in time.
+
+The hidden layer from the previous time step provides a form of memory, or context, that encodes earlier processing and informs the decisions to be made at later points in time. Critically, this approach does not impose a fixed-length limit on this prior context.
+
+The significant part about RNN lies in the new set of weights, U, that connect the hidden layer from the previous time step to the current hidden layer. These weights determine how the network makes use of past context in calculating the output for the current input. As with the other weights in the network, these connections are trained via backpropagation
+
+### Forward step
+![]({F04D1A92-FE6A-49B6-B9AF-AA7E764CE1B7}.png)
+Where :
+- $W_{hh}$ is the weight matrix of from the previous time step with size of some $d_h X d_h$
+- $W_{hx}$ the weight matrix going to the hidden layer  with size of $d_hX d_{input}$ 
+- $W_{hy}$ the weight matrix going to the output  layer $d_{out}X d_{h}$ 
+
+
+you can kind of think of recurrent neural networks in two ways.
+- One is this concept of having a hidden state that feeds back at itself, recurrently
+- Unrolling this computational graph for multiple time steps.  And this makes the data flow of the hidden states and the inputs and the outputs and the weights maybe a little bit more clear.
+
+![]({61D5E856-0CDD-47E8-90FE-819C3CF14C0B}.png)
+initialize the first hidden state to 0 for most contexts. you are reusing the weight matrix for all hidden function. Sometimes, you compute the loss of the output at each time step $L_t$ and the sum of the loss is L.  This is for many to many.
+### RNNs as Language Models
+
+Language models predict the next word in a sequence given some preceding context. For example, if the preceding context is “Thanks for all the” and we want to know how likely the next word is “fish” we would compute:
+$$
+P(fish|\text{Thanks for all the})
+$$
+Language models give us the ability to assign such a conditional probability to every possible next word, giving us a distribution over the entire vocabulary. We can also assign probabilities to entire sequences by combining these conditional probabilities with the chain rule:
+$$
+P(W_{1:n})=\prod_{i=1}^n P(w_i|w_{<i})
+$$
+RNN language models (Mikolov et al., 2010) process the input sequence one word at a time, attempting to predict the next word from the current word and the previous hidden state. RNNs thus don’t have the limited context problem that n-gram models have, or the fixed context that feedforward language models have, since the hidden state can in principle represent information about all of the preceding words all the way back to the beginning of the sequence. 
+
+The input sequence $X = [x_1;...;x_t ;...;x_N]$ consists of a series of word embeddings each represented as a one-hot vector of size |V| × 1, and the output prediction, y, is a vector representing a probability distribution over the vocabulary.
+
+At each step, the model uses the word embedding matrix E to retrieve the embedding for the current word, and then combines it with the hidden layer from the previous step to compute a new hidden layer. This hidden layer is then used to generate an output layer which is passed through a softmax layer to generate a probability distribution over the entire vocabulary. The probability that a particular word i in the vocabulary is the next word is represented by $yt [i]$, the i-th component of $yt$ :
+$$
+P(w_{t+1}=i|w_1,...,w_t)= yt [i]
+$$
+
+The probability of an entire sequence is just the product of the probabilities of each item in the sequence, where we’ll use $yi [wi ]$ to mean the probability of the true word $wi$ at time step $i$. 
+$$
+P(W_{1:n})=\prod_{i=1}^n P(w_i|w_{1:i-1})=\prod_{i=1}^n yt [i]
+$$
+
+### Stacked RNN Architectures
+In our examples thus far, the inputs to our RNNs have consisted of sequences of word or character embeddings (vectors) and the outputs have been vectors useful for predicting words. However, nothing prevents us from using the entire sequence of outputs from one RNN as an input sequence to another one.
+Stacked RNNs consist of multiple networks where the output of one layer serves as the input to a subsequent layer, as shown below 
+![[Pasted image 20241016204009.png]]
+
+Stacked RNNs generally outperform single-layer networks. One reason for this success seems to be that the network induces representations at differing levels of abstraction across layers. Just as the early stages of the human visual system detect edges that are then used for finding larger regions and shapes, the initial layers of stacked networks can induce representations that serve as useful abstractions for further layers—representations that might prove difficult to induce in a single RNN. The optimal number of stacked RNNs is specific to each application and to each training set. However, as the number of stacks is increased the training costs rise quickly.
+### Bidirectional RNNs
+
+The RNN uses information from the left (prior) context to make its predictions at time t. But in many applications we have access to the entire input sequence; in those cases we would like to use words from the context to the right of t. One way to do this is to run two separate RNNs, one left-to-right, and one right-to-left, and concatenate their representations. 
+
+In the left-to-right RNNs we’ve discussed so far, the hidden state at a given time t represents everything the network knows about the sequence up to that point. The state is a function of the inputs $x_1,...,x_t$ and represents the context of the network to the left of the current time.  $h_t^f = RNN_{forward}(x_1,...,x_t)$. This new notation $h_t^f$ simply corresponds to the normal hidden state at time t, representing everything the network has gleaned from the sequence so far.  To take advantage of context to the right of the current input, we can train an RNN on a reversed input sequence. With this approach, the hidden state at time t represents information about the sequence to the right of the current input: $h_t^b = RNN_{backwards}(x_1,...,x_t)$ Here, the hidden state h b t represents all the information we have discerned about the sequence from t to the end of the sequence.
+
+A bidirectional RNN (Schuster and Paliwal, 1997) combines two independent RNNs, one where the input is processed from the start to the end, and the other from the end to the start. We then concatenate the two representations computed by the networks into a single vector that captures both the left and right contexts of an input at each point in time. Here we use either the semicolon ”;” or the equivalent symbol ⊕ to mean vector concatenation:
+$$
+h_f=[h_t^f;h_t^b] = h_t^f ⊕ h_t^b
+$$
+![[Pasted image 20241016204706.png]]
+The figure above illustrates such a bidirectional network that concatenates the outputs of the forward and backward pass. Other simple ways to combine the forward and backward contexts include element-wise addition or multiplication. The output at each step in time thus captures information to the left and to the right of the current input. In sequence labeling applications, these concatenated outputs can serve as the basis for a local labeling decision.
+
+### The LSTM
+
+One reason for the inability of RNNs to carry forward critical information is that the hidden layers, and, by extension, the weights that determine the values in the hidden layer, are being asked to perform two tasks simultaneously: provide information useful for the current decision, and updating and carrying forward information required for future decisions. A second difficulty with training RNNs arises from the need to backpropagate the error signal back through time. The hidden layer at time t contributes to the loss at the next time step since it takes part in that calculation. As a result, during the backward pass of training, the hidden layers are subject to repeated multiplications, as determined by the length of the sequence. A frequent result of this process is that the gradients are eventually driven to zero, a situation called the vanishing gradients problem.
+
+The long short-term memory (LSTM) network (Hochreiter and Schmidhuber, 1997). LSTMs divide the context management problem into two subproblems: removing information no longer needed from the context, and adding information likely to be needed for later decision making. The key to solving both problems is to learn how to manage this context rather than hard-coding a strategy into the architecture. LSTMs accomplish this by first adding an explicit context layer to the architecture (in addition to the usual recurrent hidden layer), and through the use of specialized neural units that make use of gates to control the flow of information into and out of the units that comprise the network layers. These gates are implemented through the use of additional weights that operate sequentially on the input, and previous hidden layer, and previous context layers
+
+The first gate we’ll consider is the forget gate. The purpose of this gate is to delete information from the context that is no longer needed. The forget gate computes a weighted sum of the previous state’s hidden layer and the current input and passes that through a sigmoid. This mask is then multiplied element-wise by the context vector to remove the information from context that is no longer required.
+
+Next, we generate the mask for the add gate to select the information to add to the current context. we add this to the modified context vector to get our new context vector. 
+
+The final gate we’ll use is the output gate which is used to decide what information is required for the current hidden state (as opposed to what information needs to be preserved for future decisions).
+
+![[Pasted image 20241016210143.png]]
+### The Encoder-Decoder Model with RNNs
+Different models for different combinations of input and output size.
 ![]({BB5D6B0F-7937-45FB-AF2E-9518C804B2A5}.png)
 - One to one: vanilla neural networks
 - One to many: e.g image captioning image > sequence of words  out put is variable in length 
@@ -400,21 +544,510 @@ The key insights from this chapter can be applied to a wide range of deep learni
 - Many to many: e.g. machine translation seq. of words > seq. of words. Both variable in length and the input and output do not have to be in the same length.
 - Many to many: e.g. video classification on frame level, same length of input and output. they are  both variable. 
 
-![]({A47F30CB-ACB6-465E-B3D0-240AA4B9C117}.png)
-Take an input x, feed it to the RNN. The RNN has some internal hidden state. This state is updated every time the rnn reads a new input. which will be feed back into the model the text time it read an input. produce an output.
-![]({6927937F-81A0-4776-ADE2-67549A2C869B}.png)
-NOTICE: the same function $f_w$ and the same set of parameters are used at every time step.
- The simplest form 
-![]({F04D1A92-FE6A-49B6-B9AF-AA7E764CE1B7}.png)
 
-you can kind of think of recurrent neural networks in two ways.
-- One is this concept of having a hidden state that feeds back at itself, recurrently
-- Unrolling this computational graph for multiple time steps.  And this makes the data flow of the hidden states and the inputs and the outputs and the weights maybe a little bit more clear.
-![]({61D5E856-0CDD-47E8-90FE-819C3CF14C0B}.png)
-initialize the first hidden state to 0 for most contexts. you are reusing the weight matrix for all hidden function. Sometimes, you compute the loss of the output at each time step $L_t$ and the sum of the loss is L.  This is for many to many. 
+The encoder-decoder model is used when we are taking an input sequence and translating it to an output sequence that is of a different length than the input, and doesn’t align with it in a word-to-word way. 
+Encoder-decoder models are used especially for tasks like machine translation, where the input sequence and output sequence can have different lengths and the mapping between a token in the input and a token in the output can be very indirect. 
 
-![]({1190E85E-BC0E-44CF-8E82-DB6F4C85AFC0}.png)
-for many to many where input and output are not the same. 
-![]({12405AC1-73AC-434F-A972-044730A1538C}.png)
-![]({97C4A4B9-9DEA-4A09-8668-5EFDAA70F5C1}.png)
-![]({082A9F7D-B873-4530-828E-E84C75ECA997}.png)
+The key idea underlying these networks is the use of an encoder network that takes an input sequence and creates a contextualized representation of it, often called the context. This representation is then passed to a decoder which generates a task-specific output sequence. Encoder-decoder networks consist of three components:
+- An encoder that accepts an input sequence, $x^n_1$ , and generates a corresponding sequence of contextualized representations, $h^n_1$ . LSTMs, convolutional networks, and Transformers can all be employed as encoders.
+- A context vector, c, which is a function of $h^n_1$ , and conveys the essence of the input to the decoder.
+- A decoder, which accepts c as input and generates an arbitrary length sequence of hidden states $h^m_1$ , from which a corresponding sequence of output states $y^m_1$ , can be obtained. Just as with encoders, decoders can be realized by any kind of sequence architecture. 
+
+
+
+
+
+
+![[Pasted image 20241016211854.png]]
+The elements of the network on the left process the input sequence x and comprise the encoder. While our simplified figure shows only a single network layer for the encoder, stacked architectures are the norm, where the output states from the top layer of the stack are taken as the final representation. A widely used encoder design makes use of stacked biLSTMs where the hidden states from top layers from the forward and backward passes are concatenated to provide the contextualized representations for each time step. 
+
+The entire purpose of the encoder is to generate a contextualized representation of the input. This representation is embodied in the final hidden state of the encoder, $h^e_n$ . This representation, also called c for context, is then passed to the decoder. The decoder network on the right takes this state and uses it to initialize the first hidden state of the decoder. That is, the first decoder RNN cell uses c as its prior hidden state $h^d_0$ . The decoder autoregressively generates a sequence of outputs, an element at a time, until an end-of-sequence marker is generated.
+
+
+### Attention Mechanism
+In the model as we’ve described it so far, this context vector is $h_n$, the hidden state of the last (n th) time step of the source text. This final hidden state is thus acting as a bottleneck: it must represent absolutely everything about the meaning of the source text, since the only thing the decoder knows about the source text is what’s in this context vector. 
+
+The attention mechanism is a solution to the bottleneck problem, a way of attention mechanism allowing the decoder to get information from all the hidden states of the encoder, not just the last hidden state.
+
+In the attention mechanism, as in the vanilla encoder-decoder model, the context vector c is a single vector that is a function of the hidden states of the encoder, that is, $c = f(h^e_1 ...h^e_n )$. Because the number of hidden states varies with the size of the input, we can’t use the entire set of encoder hidden state vectors directly as the context for the decoder. 
+
+The idea of attention is instead to create the single fixed-length vector c by taking a weighted sum of all the encoder hidden states. The weights focus on (‘attend to’) a particular part of the source text that is relevant for the token the decoder is currently producing. Attention thus replaces the static context vector with one that is dynamically derived from the encoder hidden states, different for each token in decoding.  This context vector, $c_i$ , is generated anew with each decoding step i and takes all of the encoder hidden states into account in its derivation. We then make this context available during decoding by conditioning the computation of the current decoder hidden state on it (along with the prior hidden state and the previous output generated by the decoder), as we see in this equation $h^d_i = g(\hat y_{i-1},h^d_{i-1},c_i)$ .
+
+![[Pasted image 20241017163123.png]]
+
+The first step in computing $c_i$ is to compute how much to focus on each encoder state, how relevant each encoder state is to the decoder state captured in $h^d_{i−1}$ . We capture relevance by computing— at each state i during decoding—a $score(h^d_{i−1} ,h^e_{j} )$ for each encoder state j. 
+The simplest such score, called dot-product attention, implements relevance as similarity: measuring how similar the decoder hidden state is to an encoder hidden state, by computing the dot product between them.  The score that results from this dot product is a scalar that reflects the degree of similarity between the two vectors. The vector of these scores across all the encoder hidden states gives us the relevance of each encoder state to the current step of the decoder. 
+
+To make use of these scores, we’ll normalize them with a softmax to create a vector of weights, $α_{i j}$, that tells us the proportional relevance of each encoder hidden state j to the prior hidden decoder state, $h^d_{i−1}$.  Finally, given the distribution in α, we can compute a fixed-length context vector for the current decoder state by taking a weighted average over all the encoder hidden states. 
+
+With this, we finally have a fixed-length context vector that takes into account information from the entire encoder state that is dynamically updated to reflect the needs of the decoder at each step of decoding. 
+![[Pasted image 20241017163807.png]]
+
+## \[SLP\] The Transformer
+![[Pasted image 20241017164443.png]]
+The figure above sketches the transformer architecture. A transformer has three major components. At the centre are columns of transformer blocks. Each block is a multilayer network (a multi-head attention layer, feedforward networks and layer normalization steps) that maps an input vector $x_i$ in column i (corresponding to input token i) to an output vector $h_i$ . The set of n blocks maps an entire context window of input vectors ($x_1,...,x_n$) to a window of output vectors ($h_1,...,h_n$) of the same length. A column might contain from 12 to 96 or more stacked blocks.
+
+The column of blocks is preceded by the input encoding component, which processes an input token (like the word thanks) into a contextual vector representation, using an embedding matrix E and a mechanism for encoding token position. Each column is followed by a language modeling head, which takes the embedding output by the final transformer block, passes it through an unembedding matrix U and a softmax over the vocabulary to generate a single token for that column.
+
+### Attention 
+word2vec and other static embeddings, the representation of a word’s meaning is always the same vector irrespective of the context: the word chicken, for example, is always represented by the same fixed vector. So a static vector for the word it might somehow encode that this is a pronoun used for animals and inanimate entities. But in context it has a much richer meaning.
+
+These contextual words that help us compute the meaning of words in context can be quite far away in the sentence or paragraph. Transformers can build contextual representations of word meaning, contextual embeddings, by integrating the meaning of these helpful contextual words. In a transformer, layer by layer, we build up richer and richer contextualized representations of the meanings of input tokens. At each layer, we compute the representation of a token i by combining information about i from the previous layer with information about the neighboring tokens to produce a contextualized representation for each word at each position. 
+
+Attention is the mechanism in the transformer that weighs and combines the representations from appropriate other tokens in the context from layer k−1 to build the representation for tokens in layer k.
+![[Pasted image 20241017182111.png]]
+#### Attention more formally
+Attention takes an input representation $x_i$ corresponding to the input token at position i, and a context window of prior inputs $x_1..x_{i−1}$, and produces an output $a_i$. In causal, left-to-right language models, the context is any of the prior words. That is, when processing $x_i$ , the model has access to $x_i$ as well as the representations of all the prior tokens in the context window but no tokens after i. 
+
+
+Simplified version of attention At its heart, attention is really just a weighted sum of context vectors, with a lot of complications added to how the weights are computed and what gets summed. For pedagogical purposes let’s first describe a simplified intuition of attention, in which the attention output ai at token position i is simply the weighted sum of all the representations  $x_i$ , for all j ≤ i; we’ll use αi j to mean how much $x_i$ should contribute to  $a_i$ :
+$$
+a_i=\sum_{j\le i} \alpha_{ij}x_i
+$$
+Each $α_{ij}$ is a scalar used for weighing the value of input  $x_i$ when summing up the inputs to compute $a_i$. In attention we weight each prior embedding proportionally to how similar it is to the current token i. So the output of attention is a sum of the embeddings of prior tokens weighted by their similarity with the current token embedding. We compute similarity scores via dot product. 
+
+### A single attention head using query, key, and value matrices
+The attention head allows us to distinctly represent three different roles that each input embedding plays during the course of the attention process:
+- As the current element being compared to the preceding inputs. We’ll refer to  this role as a query
+- In its role as a preceding input that is being compared to the current element to determine a similarity weight. We’ll refer to this role as a key
+- And finally, as a value of a preceding element that gets weighted and summed up to compute the output for the current element
+
+To capture these three different roles, transformers introduce weight matrices $W^Q$, $W^K$, and $W^V$. These weights will project each input vector $x_i$ into a representation of its role as a key, query, or value: $q_i=x_iW^Q$ , $k_i=x_iW^K$, $v_i=x_iW^V$ .
+
+Given these projections, when we are computing the similarity of the current element $x_i$ with some prior element $x_j$ , we’ll use the dot product between the current element’s query vector $q_i$ and the preceding element’s key vector $k_j$ . Furthermore, the result of a dot product can be an arbitrarily large (positive or negative) value, and exponentiating large values can lead to numerical issues and loss of gradients during training. To avoid this, we scale the dot product by a factor related to the size of the embeddings, via diving by the square root of the dimensionality of the query and key vectors ($d_k$)
+![[Pasted image 20241017184205.png]]
+![[Pasted image 20241017184234.png]]
+The input to attention $x_i$ and the output from attention $a_i$ both have the same dimensionality 1 × d. We’ll have a dimension $d_k$ for the key and query vectors. The query vector and the key vector are both dimensionality 1×$d_k$. We’ll have a separate dimension $d_v$ for the value vectors. 
+### Multi-head Attention
+Equations 9.11-9.13 describe a single attention head. But actually, transformers use multiple attention heads. The intuition is that each head might be attending to the context for different purposes: heads might be specialized to represent different linguistic relationships between context elements and the current token, or to look for particular kinds of patterns in the context
+
+So in multi-head attention we have h separate attention heads that reside in parallel layers at the same depth in a model, each with its own set of parameters that allows the head to model different aspects of the relationships among inputs. Thus each head i in a self-attention layer has its own set of key, query and value matrices: $W^{Ki}$ , $W^{Qi}$ and $W^{Vi}$. These are used to project the inputs into separate key, value, and query embeddings for each head. 
+![[Pasted image 20241017185140.png]]
+The output of each of the h heads is of shape 1 × $d_v$, and so the output of the multi-head layer with h heads consists of h vectors of shape 1×$d_v$. These are concatenated to produce a single output with dimensionality 1×hdv. Then we use yet another linear projection $W^O ∈ \mathbb{R} ^{hd_v×d}$ to reshape it, resulting in the multi-head attention vector ai with the correct output shape \[1xd\] at each input i.
+![[Pasted image 20241017190053.png]]
+### Transformer Block
+In addition to the self-attention layer, The transformer block includes three other kinds of layers: (1) a feedforward layer, (2) residual connections, and (3) normalizing layers (colloquially called “layer norm”).
+
+
+![[Pasted image 20241017190641.png]]
+
+In the residual stream viewpoint, we consider the processing of an individual token i through the transformer block as a single stream of d-dimensional representations for token position i. This residual stream starts with the original input vector, and the various components read their input from the residual stream and add their output back into the stream.
+
+The input at the bottom of the stream is an embedding for a token, which has dimensionality d. This initial embedding gets passed up (by residual connections), and is progressively added to by the other components of the transformer. Thus the initial vector is passed through a layer norm and attention layer, and the result is added back into the stream, in this case to the original input vector $x_i$. And then this summed vector is again passed through another layer norm and a feedforward layer, and the output of those is added back into the residual, and we’ll use $h_i$ to refer to the resulting output of the transformer block for token i. 
+
+Feedforward layer The feedforward layer is a fully-connected 2-layer network, i.e., one hidden layer, two weight matrices. The weights are the same for each token position i , but are different from layer to layer. It is common to make the dimensionality $d_{ff}$ of the hidden layer of the feedforward network be larger than the model dimensionality d. Layer Norm At two stages in the transformer block we normalize the vector This process, called layer norm (short for layer normalization), is one of many forms of normalization that can be used to improve training performance in deep neural networks. Layer norm is a variation of the z-score from statistics, applied to a single vector in a hidden layer, thus, the input to layer norm is a single vector of dimensionality d and the output is that vector normalized, again of dimensionality d. The first step in layer normalization is to calculate the mean, µ, and standard deviation, σ, over the elements of the vector to be normalized. Given an embedding vector x of dimensionality d, these values are calculated as follows $\mu = \frac{1}{d}\sum^d_{i=1}x_i$  $\sigma = \sqrt{\frac{1}{d}\sum^d_{i=1}(x_i-\mu)^2}$. 
+Given these values, the vector components are normalized by subtracting the mean from each and dividing by the standard deviation. The result of this computation is a new vector with zero mean and a standard deviation of one. Finally, in the standard implementation of layer normalization, two learnable parameters, γ and β, representing gain and offset values, are introduced. 
+$$
+LayerNorm(x) = \gamma\frac{(x-\mu)}{\sigma}+\beta
+$$
+Putting it all together The function computed by a transformer block can be expressed by breaking it down with one equation for each component computation, using t (of shape \[1 × d\]) to stand for transformer and superscripts to demarcate each computation inside the block:
+![[Pasted image 20241017191732.png]]
+Notice that the only component that takes as input information from other tokens (other residual streams) is multi-head attention, which (as we see from (9.27)) looks at all the neighboring tokens in the context. The output from attention, however, is then added into this token’s embedding stream. In fact, Elhage et al. (2021) show that we can view attention heads as literally moving information from the residual stream of a neighboring token into the current stream. The high-dimensional embedding space at each position thus contains information about the current token and about neighboring tokens, albeit in different subspaces of the vector space
+![[Pasted image 20241017191900.png]]
+Crucially, the input and output dimensions of transformer blocks are matched so they can be stacked. Each token vector xi at the input to the block has dimensionality d, and the output hi also has dimensionality d. Transformers for large language models stack many of these blocks, from 12 layers (used for the T5 or GPT-3-small language models) to 96 layers (used for GPT-3 large), to even more for more recent models. 
+### Parallelizing Computation
+This description of multi-head attention and the rest of the transformer block has been from the perspective of computing a single output at a single time step i in a single residual stream. the attention computation performed for each token to compute $a_i$ is independent of the computation for each other token, and that’s also true for all the computation in the transformer block computing $h_i$ from the input $x_i$ . That means we can easily parallelize the entire computation, taking advantage of efficient matrix multiplication routines. 
+
+We do this by packing the input embeddings for the N tokens of the input sequence into a single matrix X of size \[N × d\]. Each row of X is the embedding of one token of the input
+#### Parallelizing attention
+Let’s first see this for a single attention head and then turn to multiple heads, and then add in the rest of the components in the transformer block. For one head we multiply X by the key, query, and value matrices $W^Q$ of shape \[d ×$d_k$ \], $W^K$ of shape \[d ×$d_k$ \], and $W^V$ of shape \[d ×dv\], to produce matrices Q of shape \[N ×$d_k$ \], $K ∈ \mathbb{R}^ {N×d_k}$ , and $V ∈ \mathbb{R}^ {N×d_v}$ , containing all the key, query, and value vectors: $Q=XW^Q$ $K=XW^K$  $V=XW^V$ 
+
+Given these matrices we can compute all the requisite query-key comparisons simultaneously by multiplying Q and $K^T$ in a single matrix multiplication. The product is of shape N ×N.
+![[Pasted image 20241017194858.png]]
+Once we have this $QK^T$ matrix, we can very efficiently scale these scores, take the softmax, and then multiply the result by V resulting in a matrix of shape N ×d: a vector embedding representation for each token in the input. We’ve reduced the entire self-attention step for an entire sequence of N tokens for one head to the following computation:
+$$
+A=softmax(mask(\frac{QK^T}{\sqrt{d_k}}))V
+$$
+#### Masking out the future
+You may have noticed that we introduced a mask function in equation above. This is because the self-attention computation as we’ve described it has a problem: the calculation in $QK^T$ results in a score for each query value to every key value, including those that follow the query. To fix this, the elements in the upper-triangular portion of the matrix are zeroed out (set to −∞), thus eliminating any knowledge of words that follow in the sequence.
+![[Pasted image 20241017195819.png]]
+![[Pasted image 20241017195833.png]]
+#### Parallelizing multi-head attention
+In multi-head attention, as with self-attention, the input and output have the model dimension d, the key and query embeddings have dimensionality $d_k$ , and the value embeddings are of dimensionality $d_v$. Thus for each head i, we have weight layers $W^Q_i ∈ \mathbb{R}^{d×d_k}$ , $W^K_i ∈ \mathbb{R}^{d×d_k}$ , and $W^V_i ∈ \mathbb{R}^{d×d_v}$ , and these get multiplied by the inputs packed into X to produce $Q ∈ \mathbb{R}^ {N×d_k}$, $K ∈ \mathbb{R}^ {N×d_k}$ , and $V ∈ \mathbb{R}^{N×d_v}$ . The output of each of the h heads is of shape N × $d_v$, and so the output of the multi-head layer with h heads consists of h matrices of shape N×$d_v$. To make use of these matrices in further processing, they are concatenated to produce a single output with dimensionality $N × hd_v$. Finally, we use yet another linear projection $W^O ∈ \mathbb{R}^{hd_v×d}$ , that reshape it to the original output dimension for each token. Multiplying the concatenated $N ×hd_v$ matrix output by $W^O ∈ \mathbb{R}^ {hd_v×d}$ yields the self-attention output A of shape \[N ×d\].
+![[Pasted image 20241017201549.png]]
+
+Putting it all together with the parallel input matrix X The function computed in parallel by an entire layer of N transformer block over the entire N input tokens can be expressed as:![[Pasted image 20241017201718.png]]
+Or we can break it down with one equation for each component computation, using T (of shape \[N × d\]) to stand for transformer and superscripts to demarcate each computation inside the block:
+![[Pasted image 20241017201743.png]]
+
+# Tricks of the trade and data science challenge
+## Faster training and convergence 
+### Initialization 
+Initialize the weights $W_{ij} \approx \sqrt{\frac{1}{n_j+n_i} }\mathcal{N}(0,1)$   (Glorot Initialization).  where i and j are the number of inputs and outputs. 
+### Gradient clipping
+![[Pasted image 20241018160739.png]]
+- Highly nonlinear model: Gradient update can catapult parameters very far.
+- Heuristic: Clip the magnitude of the gradient.
+solution truncate the gradients at some value 
+
+### Batch Normalization 
+Normalization is a data pre-processing tool used to bring the numerical data to a common scale without distorting its shape. Batch normalization is a process to make neural networks faster and more stable through adding extra layers in a deep neural network. The new layer performs the standardizing and normalizing operations on the input of a layer coming from a previous layer.![[image-74.webp]]
+Initially, our inputs X1, X2, X3, X4 are in normalized form as they are coming from the pre-processing stage. When the input passes through the first layer, it transforms, as a sigmoid function applied over the dot product of input X and the weight matrix W.  Although, our input X was normalized with time the output will no longer be on the same scale. As the data go through multiple layers of the neural network and L activation functions are applied, it leads to an internal co-variate shift in the data.
+
+Normalization is the process of transforming the data to have a mean zero and standard deviation one.  the next step is to calculate the standard deviation of the hidden activations.
+![[Screenshot-from-2021-03-09-11-41-50.webp]]
+Further, as we have the mean and the standard deviation ready. We will normalize the hidden activations using these values. For this, we will subtract the mean from each input and divide the whole value with the sum of standard deviation and the smoothing term (_ε_). The smoothing term(_ε_) assures numerical stability within the operation by stopping a division by a zero value.
+![[Screenshot-from-2021-03-09-11-43-08-1.webp]]
+In the final operation, the re-scaling and offsetting of the input take place. Here two components of the BN algorithm come into the picture, γ(gamma) and β (beta). These parameters are used for re-scaling (γ) and shifting(β) of the vector containing values from the previous operations.
+![[Screenshot-from-2021-03-09-12-51-12.webp]]
+These two are learnable parameters, during the training neural network ensures the optimal values of γ and β are used. That will enable the accurate normalization of each batch.
+## Better Performance
+### Regularization 
+Goals
+- Easy to perform great on the training set (overfitting) in a neural networks.
+- Regularization improves generalization to new data at the expense of increased training error.
+- Use held-out validation data to choose hyperparameter (e.g. regularization strength).
+- Use held-out test data to evaluate performance.
+#### Regularization Methods
+• Limited size of network
+• Early stopping
+• Weight decay
+• Data augmentation
+• Injecting noise
+• Parameter sharing (e.g. convolutional)
+• Sparse representations
+• Ensemble methods
+• Auxiliary tasks (e.g. unsupervised)
+• Probabilistic treatment (e.g. variational methods)
+• Adversarial training, ...
+##### Limited size of network
+- Rule of thumb: When the number of parameters is ten times less than the number of outputs times the number of examples, overfitting will not be severe.
+- Reducing input dimensionality (e.g. by PCA) helps in reducing parameters
+- Easy. Low computational complexity
+- Other methods give better accuracy
+	- Data augmentation increases the number of examples
+	- Parameter sharing decreases the number of parameters
+	- Auxiliary tasks increases the number of outputs
+##### Early stopping 
+• Monitor validation performance during training
+• Stop when it starts to deteriorate
+• With other regularization, it might never start
+• Keeps solution close to the initialization
+##### Weight decay 
+- Penalizes the complexity of the model
+- Add a penalty term to the training cost $C = ··· + \Omega (\theta)$ Note: only a function of parameters $\theta$, not data.
+- $L^2$ regularization: $\Omega(\theta)=\frac{\lambda}{2}||\theta||^2$ hyperparameter for strength. Gradient: $\frac{\delta  \Omega(\theta)}{\delta \theta_i} = \lambda\theta_i$ 
+- $L^1$ regularization: $\Omega(\theta) =\lambda/2||\theta||_1$ Gradient: $\frac{\delta\Omega(\theta)} {\delta\theta_i} = \lambda sign(\theta_i)$. Induces sparsity: Often many params become zero.
+- Max-norm: Constrain row vectors $w_i$ of weight matrices to $||w_i||^2 \le c$.
+
+How to set hyperparameter $\lambda$ 
+- Split data into training, validation, and test sets
+- Choose a number of settings train separately
+- Use validation performance to pick the best $\lambda$
+- (Retrain using both training and validation sets)
+- Evaluate final performance on test data
+##### Data Augmentation 
+Augmented data by image-specific transformations. E.g. cropping just 2 pixels gets you 9 times the data!. Tilt the images and other stuff. 
+##### Injecting noise
+- Inject random noise during training separately in each epoch
+- Can be applied to input data, to hidden activations, or to weights
+- Can be seen as data augmentation
+- Simple end effective
+##### Parameter sharing 
+- Force sets of parameters to be equal
+- Reduces the number of (unique) parameters
+- Important in convolutional networks (CNNs, this lecture)
+- Auto-encoders sometimes share weights between encoder and decoder (Unsupervised learning lecture)
+##### Ensemble methods
+- Train several models and take average of their outputs Instead of one point representing $P(\theta|X)$, use several
+- Also known as bagging or model averaging
+- It helps to make individual models different by
+	- varying models or algorithms
+	- varying hyperparameters
+	- varying data (dropping examples or dimensions)
+	- varying random seed
+- It is possible to train a single final model to mimick the performance of the ensemble, for test-time computational efficiency
+##### Dropout 
+- Each time we present data example x, randomly delete each hidden node with 0.5 probability
+- Can be seen as injecting noise or as ensemble:
+	- Multiplicative binary noise
+	- Training an ensemble of $2^{|h|}$ networks with weight sharing
+- At test time, use all nodes but divide weights by 2
+![[Pasted image 20241018170959.png]]
+##### Adversarial training
+![[Pasted image 20241018171356.png]]
+- Search for an input $x'$ near a datapoint x that would have very different output $y'$ from y
+- Adversaries can be found surprisingly close!
+- Look at the panda input look at the cost function then change the image in the direction where the cost function increases the most. 
+## Tricks of the trade 
+- **Become one with the data**. The first step is to thoroughly inspect the data you will be using to train your model. Look for:
+    - Duplicate examples
+    - Corrupted images or labels
+    - Data imbalances and biases
+    - Think about how you would classify the data yourself.
+    - Search/filter/sort the data by whatever you can think of (e.g. type of label, size of annotations, number of annotations, etc.) and visualize their distributions and the outliers along any axis.
+- **Set up the end-to-end training/evaluation skeleton + get dumb baselines**. Before you start building a complex model, set up a basic training and evaluation pipeline with a simple model, such as a linear classifier or a small convolutional neural network. We’ll want to train it, visualize the losses, any other metrics (e.g. accuracy), model predictions, and perform a series of ablation experiments with explicit hypotheses along the way. This will help ensure the correctness of the pipeline.
+- Here are some tips for this stage:
+    - **Fix the random seed**. This guarantees that the same results will be obtained if the code is run twice.
+    - **Simplify**. Make sure that any unnecessary complexity is disabled, such as data augmentation.
+    - **Add significant digits to the evaluation**. Run the evaluation over the entire (large) test set when plotting the test loss. Don't just plot test losses over batches.
+    - **Verify loss at initialization**. Verify that the loss begins at the correct loss value. If you initialize your final layer correctly you should measure $-log(1/n_classes)$ on a softmax at initialization.
+    - **Initialize weights well**. For example, if regressing values that have a mean of 50, initialize the final bias to 50. If you have an imbalanced dataset of a ratio 1:10 of positives:negatives, set the bias on your logits such that your network predicts probability of 0.1 at initialization.
+    - **Set a human baseline**. Monitor metrics other than loss that are human interpretable and checkable (for example, accuracy). Evaluate your own (human) accuracy whenever possible and compare it to this baseline.
+    - **Set an input-independent baseline**. For example, set all inputs to zero. This should perform worse than plugging in the data. If not, the model is not learning to extract information from the input.
+    - **Overfit one batch**. Overfit a single batch of only a few examples. Increase the model capacity by adding layers or filters and make sure that the lowest achievable loss is reached.
+    - **Verify decreasing training loss**. If you're working with a toy model at this point, you should be underfitting your dataset. Try to increase its capacity slightly. Did your training loss decrease as expected?
+    - **Visualize just before the network**. Visualize the data immediately before `y_hat = model(x)`. Visualize _exactly_ what goes into the network by decoding the raw tensor of data and labels.
+    - **Visualize prediction dynamics**. Visualize model predictions on a fixed test batch during training. The "dynamics" of how these predictions move will provide a good understanding of how the training progresses.
+    - **Use backpropagation to chart dependencies**. Deep learning code frequently contains complex, vectorized, and broadcasted operations. One way to debug this  is to set the loss to be something trivial like the sum of all outputs of example **i**, run the backward pass all the way to the input, and ensure that you get a non-zero gradient only on the **i-th** input.
+    - **Generalize a special case**. A relatively common bug is that people attempt to write relatively general functionality from scratch. It may be useful to write a very specific function for the task at hand, ensure that it works, and then generalize it later, ensuring that the same result is obtained.
+- **Overfit**. Once you have a good understanding of the dataset and a working training and evaluation pipeline, you can start iterating on a good model. Start with a model that is large enough to overfit the training data  and then regularize it appropriately. The reason for these two stages is that if no model can achieve a low error rate, there may be problems, bugs, or misconfiguration.
+    - **Picking the model**. Resist the temptation of getting crazy and creative in stacking up the lego blocks of the neural net toolbox in various exotic architectures in the early stages of your project. Use an appropriate architecture for your data. **Don’t be a hero** . Find the most related paper to your task and copy and paste their simplest architecture that performs well. For example, for image classification tasks, just copy and paste ResNet-50 for the first run.
+    - **Adam is safe**. In the early stages of establishing baselines, use Adam with a learning rate of 3e-4. Adam is much more forgiving to hyperparameters, including a bad learning rate. For convolutional neural networks, well-tuned stochastic gradient descent will almost always outperform Adam, but the optimal learning rate region is much narrower and more problem-specific. Note: If you are using recurrent neural networks (RNNs) and related sequence models, Adam is more commonly used.
+    - **Complexify only one at a time**. If you have multiple signals to plug into your classifier, connect them one at a time, ensuring that you get the expected performance boost.
+    - **Do not trust learning rate decay defaults**. If you're re-purposing code from another domain, be very careful with learning rate decay. ImageNet, for example, would decay by 10 on epoch 30. If you're not training ImageNet, you almost certainly don't want to use that. If you're not careful, your code could secretly be driving your learning rate to zero too early, preventing your model from converging.
+- **Regularize**. Once you have a model that can overfit the training data, you need to regularize it to prevent overfitting. 
+	- **Get more data**: Adding more real training data is the best and preferred way to regularize a model in any practical setting. A common mistake is to spend a lot of engineering effort trying to get the most out of a small dataset when you could be collecting more data.
+	- **Data augmentation**: Use more aggressive data augmentation if collecting more real data isn't an option.
+	- **Creative augmentation**: People are finding creative ways to expand datasets, such as domain randomization, using simulation, or even using generative adversarial networks (GANs).
+	- **Pretrain**: Even if you have enough data, it's rarely a bad idea to use a pre-trained network.
+	- **Stick with supervised learning**: Unsupervised pretraining has not, as far as is known, reported strong results in modern computer vision (though natural language processing seems to be doing pretty well with BERT and similar models these days, most likely due to the more deliberate nature of text and a higher signal-to-noise ratio).
+	- **Smaller input dimensionality**: Eliminate features that may contain spurious signals.
+	- **Smaller model size**: Use domain knowledge constraints on the network to decrease its size in many cases.
+	- **Decrease the batch size**: Smaller batch sizes correspond to stronger regularization due to the normalization inside batch normalization.
+	- **Drop**: Add dropout. Use dropout2d (spatial dropout) for convolutional neural networks (CNNs). Use this sparingly/carefully because dropout does not seem to play nice with batch normalization.
+	- **Weight decay**: Increase the weight decay penalty.
+	- **Early stopping**: Stop training based on the measured validation loss to catch the model just as it is about to overfit.
+	- **Try a larger model**: While larger models will eventually overfit much more, their "early stopped" performance can often be much better than that of smaller models.
+	- **L1 Regularization**: Add the sum of the absolute values of the weights to the unregularized cost function. L1 regularization tends to concentrate the weight of the network in a relatively small number of high-importance connections, while the other weights are driven toward zero.
+
+- **Tune**. Once you have a regularized model, you can fine-tune the hyperparameters to get the best possible performance. 
+	-  **Random over grid search**: Random search is better than grid search for tuning multiple hyperparameters simultaneously because neural networks are more sensitive to some parameters than others.
+	
+- **Squeeze out the juice:** Once you find the best types of architectures and hyper-parameters you can still use a few more tricks to squeeze out the last pieces of juice out of the system:
+	- **Ensembles**: Model ensembles are a guaranteed way to gain 2% accuracy on any task. If you can’t afford the computation at test time look into distilling your ensemble into a network using dark knowledge.
+	- **leave it training**: Networks train for a surprisingly long time.
+
+The sources also mention some of the common problems you may encounter while developing a deep learning model. The **vanishing gradient problem** can occur in deep neural networks, making it difficult to train the early layers of the network. This problem happens when the gradients in the early layers become very small, preventing the weights from being updated effectively. Another potential issue is using a **learning rate that is too high**, which can prevent the model from converging. Finally, **overfitting** can occur when the model is too complex and learns the training data too well, resulting in poor performance on new data.
+
+# \[DLB\] Un- and semi-supervised learning
+## Unsupervised Learning
+ Deep learning today:
+	• Mostly about pure supervised learning
+	• Requires a lot of labelled data: expensive to collect
+Deep learning in the future:
+	• Unsupervised, more human-like
+
+Data is just $x'$ , not input-output pairs $x, y$.
+
+Possible goals:
+	• Model P(x'), or
+	• Representation $f : x' → h$.
+Comparisons to supervised learning $P(y|x)$:
+- See data as $x' = y$, model $P(y|x = ∅)$
+- No right output y given, invent your own output h
+- Concatenate inputs and outputs to $x' = [x; y]$, prepare to answer any query, including $P(y|x)$.
+### Approaches to unsupervised learning
+Besides kernel density estimation, virtually all unsupervised learning approaches use variables h.
+- Discrete h (cluster index, hidden state of HMM, map unit of SOM)
+- Binary vector h (most Boltzmann machines)
+- Continuous vector h (PCA, ICA, NMF, sparse coding, autoencoders, state-space models, . . . )
+Vocabulary:
+- Encoder function $f : x → h$
+- Decoder function $g : h → \hat x$
+- Reconstruction $\hat x$ 
+![[Pasted image 20241020183624.png]]
+### PCA as an autoencoder
+Assume linear encoder and decoder:
+- $f(x) = W^{(1)}x + b^{(1)}$
+- $g(x) = W^{(2)}x + b^{(2)}$
+PCA solution minimizes criterion $C=\mathbb{E} \bigg[ ||x-\hat x||^2     \bigg]$ Note: Solution is not unique, even if restricting $W^{(2)} = W^{(1)T}$. 
+
+
+## Autoencoders
+### Undercomplete Autoencoders 
+An autoencoder whose code dimension is less than the input dimension is called **undercomplete**. Learning an undercomplete representation forces the autoencoder to capture the most salient features of the training data. The learning process is described simply as minimizing a loss function $$L(x,g(f(x)))$$Where L is a loss function penalizing $g(f(x))$ for being dissimilar from $x$, such as the mean squared error. 
+
+When the decoder is linear and L is the mean squared error, an undercomplete autoencoder learns to span the same subspace as PCA. In this case, an autoencoder trained to perform the copying task has learned the principal subspace of the training data as a side eﬀect.
+
+Autoencoders with nonlinear encoder functions f and nonlinear decoder functions g can thus learn a more powerful nonlinear generalization of PCA. Unfortunately, if the encoder and decoder are allowed too much capacity, the autoencoder can learn to perform the copying task without extracting useful information about the distribution of the data. 
+
+### Regularized Autoencoders 
+Regularized autoencoders provide the ability to  choose the code dimension and the capacity of the encoder and decoder based on the complexity of distribution to be modelled. Rather than limiting the model capacity by keeping the encoder and decoder shallow and the code size small, regularized autoencoders use a loss function that encourages the model to have other properties besides the ability to copy its input to its output.
+
+These other properties include sparsity of the representation, smallness of the derivative of the representation, and robustness to noise or to missing inputs. A regularized autoencoder can be nonlinear and overcomplete but still learn something useful about the data distribution, even if the model capacity is great enough to learn a trivial identity function. 
+
+#### Sparse Autoencoders
+A  sparse autoencoder is simply an autoencoder whose training criterion involves a sparsity penalty $Ω(h)$ on the code layer h, in addition to the reconstruction error:$$L(x,g(f(x)))+\Omega(h)$$where $g(h)$ is the decoder output, and typically we have $h=f(x)$, the encoder output. 
+
+This sparsity penalty is key to preventing the autoencoder from simply learning an identity function, where the output is just a copy of the input. Instead, it forces the autoencoder to discover and encode the most salient features of the dataset.
+
+Let's look at the cost function of a sparse autoencoder to understand this better:
+- $L(x, g(f(x)))$ represents the reconstruction error, which measures how well the decoder, denoted by $g$, reconstructs the original input $x$ from the encoded representation $h$.
+- $Ω(h)$ is the sparsity penalty term, which encourages the hidden representation $h$ to be sparse.
+- $f(x)$ is the encoder function, which maps the input $x$ to the hidden representation $h$.
+
+One way to understand the role of the sparsity penalty is to think of it as a reflection of the model's prior assumptions about the distribution of the latent variables 'h'. From this viewpoint, the sparse autoencoder can be seen as an approximation of a generative model that has both visible variables 'x' and latent variables 'h'.
+
+The objective of the generative model is to maximize the likelihood of the observed data `x` given the model's parameters. This involves considering all possible values of the latent variables 'h', which is computationally expensive. The sparse autoencoder simplifies this by focusing on a single, highly probable value of 'h' that is consistent with the observed data.
+
+The selection of this 'h' is influenced by the model's prior distribution over the latent variables, represented by $p_{model}(h)$. If this prior distribution favors sparse values of 'h', then the sparsity penalty Ω(h) emerges naturally as a consequence of trying to maximize the likelihood of the data under this generative model.
+
+For instance, choosing a Laplace prior for $p_{model}(h)$, which inherently favors sparse 'h' values, leads to an absolute value sparsity penalty:
+
+$$
+p_{model}(h_i) = (λ / 2) * \exp(-λ * |h_i|)
+$$
+
+which corresponds to:
+
+$$
+Ω(h) = λ ∑_i |h_i|
+$$
+
+where:
+
+- λ is a hyperparameter controlling the strength of the sparsity preference.
+- _hi_ represents the activation of the _i_-th neuron in the hidden layer.
+
+Sparse autoencoders are frequently used for feature learning, aiming to discover meaningful and informative features from unlabeled data. The learned sparse representations can be more robust and generalizable compared to those learned by standard autoencoders. These features can then be utilized for various downstream tasks such as classification, where the learned representations can often lead to improved performance.
+
+#### Denoising Autoencoders
+Rather than adding a penalty Ω to the cost function, we can obtain an autoencoder that learns something useful by changing the reconstruction error term of the cost function.  Traditionally, autoencoders minimize some function $$L(x,g(f(x)))$$
+Where L is a loss function penalizing $g(f(x))$ for being dissimilar from x. 
+A denoising autoencoder (DAE) instead minimizes $$L(x,g(f(\tilde{x})))$$
+where $\tilde{x}$ is a copy of x that has been corrupted by some form of noise. Denoising autoencoders must therefore undo this corruption rather than simply copying their input. 
+#### Regularizing by Penalizing Derivatives
+
+Another strategy for regularizing an autoencoder is to use a penalty Ω, as in sparse autoencoders,$$L(x,g(f(x)))+\Omega(h,x)$$
+but with a diﬀerent form of Ω:$$\Omega(h,x)=\lambda\sum_i||\nabla_xh_i||^2$$
+This forces the model to learn a function that does not change much when x changes slightly. Because this penalty is applied only at training examples, it forces the autoencoder to learn features that capture information about the training distribution. 
+An autoencoder regularized in this way is called a contractive autoencoder, or CAE. This approach has theoretical connections to denoising autoencoders, manifold learning, and probabilistic modelling.
+
+
+### Representational Power, Layer Size and Depth 
+
+Autoencoders are often trained with only a single layer encoder and a single layer decoder. However, this is not a requirement. In fact, using deep encoders and decoders oﬀers many advantages.
+
+One major advantage of nontrivial depth is that the universal approximator theorem guarantees that a feedforward neural network with at least one hidden layer can represent an approximation of any function to an arbitrary degree of accuracy, provided that it has enough hidden units. 
+
+A deep autoencoder, with at least one additional hidden layer inside the encoder itself, can approximate any mapping from input to code arbitrarily well, given enough hidden units.
+
+Depth can exponentially reduce the computational cost of representing some functions. Depth can also exponentially decrease the amount of training data needed to learn some functions
+### Stochastic Encoders and Decoders
+Instead of a fixed mapping from input to code, a stochastic encoder represents the encoding process as a conditional probability distribution, $p_{encoder}(h | x)$. Similarly, the decoder uses a conditional probability distribution, $p_{decoder}(x | h)$, to reconstruct the input given a code.
+
+This shift towards probabilistic mappings injects noise into both the encoding and decoding steps. This means that for a given input 'x', the encoder can produce different codes 'h' with varying probabilities. Similarly, the decoder can generate different reconstructions 'x' for a given code 'h'.
+
+Any latent variable model, denoted as $p_{model}(h, x)$, can be seen as defining both a stochastic encoder and decoder:
+- Stochastic Encoder: $p_{encoder}(h | x) = p_{model}(h | x)$
+- Stochastic Decoder: $p_{decoder}(x | h) = p_{model}(x | h)$ 
+
+Importantly, the encoder and decoder distributions in a stochastic autoencoder do not necessarily have to come from a single, well-defined joint distribution $p_{model}(h, x)$. This flexibility opens up new possibilities for designing and training autoencoders.
+
+Although the encoder and decoder distributions may initially be incompatible, training the autoencoder as a denoising autoencoder with sufficient capacity and training data can lead to asymptotic compatibility between them. This means that with enough training, the encoder and decoder will learn to represent a consistent probabilistic model of the data.
+
+The use of stochastic encoders and decoders introduces a powerful mechanism for learning more robust and expressive representations of data. By incorporating noise and uncertainty into the encoding and decoding processes, these models can better capture the underlying structure of complex data distributions. This opens up new avenues for applying autoencoders in various domains, including generative modeling, representation learning, and anomaly detection.
+
+### Denoising Autoencoders
+The denoising autoencoder(DAE) is an autoencoder that receives a corrupted data point as input and is trained to predict the original, uncorrupted data point as its output. 
+We introduce a corruption process $C(\tilde{x} | x)$, which represents a conditional distribution over corrupted samples $\tilde{x}$, given a data sample x.
+![[Pasted image 20241020203725.png]]
+The autoencoder then learns a reconstruction distribution $p_{reconstruct}(x |\tilde{x})$ estimated from training pairs $(x,\tilde{x})$ as follows:
+- Sample a training example x from the training data.
+- Sample a corrupted version $\tilde{x}$ from $C(\tilde{x} | x = x)$.
+- Use $(x,\tilde{x})$ as a training example for estimating the autoencoder reconstruction distribution $p_{reconstruct}(x |\tilde{x}) =p_{decoder}(x | h)$ with h the output of encoder $f(\tilde{x})$ and $p_{decoder}$typically deﬁned by a decoder $g(h)$. 
+Typically we can simply perform gradient-based approximate minimization on the negative log-likelihood $−log p_{decoder}(x | h)$. As long as the encoder is deterministic, the denoising autoencoder is a feedforward network and may be trained with exactly the same techniques as any other feedforward network. We can therefore view the DAE as performing stochastic gradient descent on the following expectation: $$-\mathbb{E}_{x \sim \hat p_{data}(x)}\mathbb{E}_{\tilde{x}\sim C(\tilde{x}|x)}\log~p_{decoder}(x|h=f(\tilde{x}))$$
+#### Estimating the Score
+Denoising autoencoders (DAEs) can be used to estimate the _score_ of a probability distribution, which is a vector field defined as the gradient of the log probability density function. During training, a DAE learns to map a corrupted data point back to its original, uncorrupted form. In doing so, it learns a vector field represented by the difference between the reconstructed output, `g(f(x))`, and the input, 'x'. This vector field approximates the score of the data distribution. It essentially points from the corrupted input towards the nearest point on the manifold of clean data.
+
+This ability to estimate the score is a crucial aspect of how DAEs learn the underlying structure of data. The score acts as a guide, directing the model towards regions of higher probability density on the data manifold. By minimizing the distance between the reconstruction and the original data point, the DAE learns a representation that captures the key variations within the data. For continuous data with Gaussian noise, this score estimation capability holds true for a wide range of encoder and decoder architectures. 
+![[Pasted image 20241020211035.png]]
+### Learning Manifolds
+Autoencoders, like many machine learning algorithms, are based on the idea that data tends to lie on or near a low-dimensional manifold. However, while other algorithms might only learn functions that behave well on the manifold, autoencoders go a step further and aim to actually learn the structure of the manifold itself.
+
+To grasp how this works, it's important to understand some key characteristics of manifolds. A crucial concept is the **tangent plane**, which describes the local directions of variation allowed on the manifold at a particular point
+
+Autoencoder training involves a trade-off between two competing forces:
+
+1. **Reconstruction Accuracy:** Learning an encoding 'h' from the input 'x' that allows 'x' to be accurately reconstructed using a decoder. This force encourages the autoencoder to preserve as much information about the input as possible.
+
+2. **Constraints or Regularization:** This could involve limiting the capacity of the autoencoder, adding sparsity penalties, or imposing constraints on the derivatives of the encoding or reconstruction functions. These constraints encourage the autoencoder to learn more general and robust representations.
+
+The balance between these forces is what allows autoencoders to learn meaningful representations. The model can only afford to represent variations in the input that are necessary to reconstruct training examples. If the data lies on a low-dimensional manifold, the autoencoder learns a representation that captures the local coordinate system of the manifold around each training example.
+
+Essentially, the encoder becomes sensitive to changes along the manifold directions but insensitive to changes orthogonal to the manifold. This is because variations orthogonal to the manifold are not needed to reconstruct the training data.
+
+
+The contrast between autoencoders and traditional nonparametric manifold learning methods, which often rely on nearest neighbour graphs to capture the structure of the manifold. These methods can be effective when the manifolds are relatively smooth and well-sampled, but they struggle with complex, high-dimensional manifolds that require more than just local interpolation to be accurately represented.
+
+Autoencoders, particularly deep autoencoders, are better equipped to handle such complex manifolds by leveraging their ability to learn distributed representations and hierarchical features. This advantage stems from their parametric nature and the ability to exploit parameter sharing across different regions of the input space.
+
+An example of learning the manifold of image translations. Translating an image creates a path on a manifold through the high-dimensional space of all possible images. A successful autoencoder would learn to represent this translation manifold by capturing the underlying variations in the image caused by the translation. The encoder would be sensitive to changes in position but insensitive to other irrelevant features of the image.![[Pasted image 20241020211954.png]]
+![[Pasted image 20241020212023.png]]
+### Contractive Autoencoders
+**Contractive autoencoders (CAEs)** as a type of regularized autoencoder that explicitly encourages the derivatives of the encoder function, `f(x)`, to be small. This is achieved by adding a penalty term, `Ω(h)`, to the reconstruction cost function. This penalty, based on the Frobenius norm of the Jacobian matrix of `f(x)`, promotes the contraction of the local neighborhood around each training point in the encoding space.
+
+Here's the CAE penalty term:
+
+```
+Ω(h) =  λ || ∂f(x) / ∂x ||_F^2
+```
+
+where:
+
+- `λ` is a hyperparameter controlling the strength of the penalty.
+- `||.||_F` represents the Frobenius norm.
+- `∂f(x) / ∂x` is the Jacobian matrix of the encoder function.
+
+The intuition behind CAEs is that by minimizing the sensitivity of the encoder to small changes in the input, the model is forced to focus on the most salient variations in the data. This is particularly beneficial for learning the structure of manifolds, as discussed in section 14.6 of the sources.
+
+Here's how CAEs are used to learn manifolds:
+
+1. **Minimize Perturbations:** The CAE penalty encourages the model to map a neighborhood of input points to a smaller neighborhood in the encoding space. This contraction effect forces the encoder to be less sensitive to small, potentially irrelevant variations in the input.
+2. **Focus on Tangent Directions:** The directions in the input space that correspond to larger values in the Jacobian matrix are those that cause the most significant changes in the encoding. These directions are likely to be aligned with the tangent planes of the manifold, as they represent the directions of greatest variation within the data.
+3. **Learn Manifold Structure:** By focusing on these tangent directions and minimizing sensitivity to other variations, the CAE effectively learns a representation that captures the local coordinate system of the manifold.
+
+The sources point out a key connection between CAEs and denoising autoencoders (DAEs): in the limit of small Gaussian input noise, the denoising reconstruction error becomes equivalent to a contractive penalty on the reconstruction function, `g(f(x))`.
+
+This link highlights the shared goal of both methods: to learn robust representations that are insensitive to noise or minor perturbations in the input. While DAEs achieve this by explicitly reconstructing clean data from corrupted inputs, CAEs achieve it by directly penalizing the sensitivity of the encoder function to input variations.
+
+Practical Considerations:
+- **Deep CAEs:** When training deep CAEs, directly computing the Jacobian for the entire network can be computationally expensive. A common strategy is to train a stack of single-layer CAEs, each reconstructing the hidden layer of the previous one. This greedy layer-wise pretraining helps approximate the desired contractive property for the deep network.
+    
+- **Scaling Issues:** The contractive penalty can lead to degenerate solutions if the decoder is not properly scaled. For example, the encoder could learn to shrink the input, while the decoder simply expands it back, without learning anything useful. One way to prevent this is to tie the weights of the encoder and decoder, as suggested in the sources. This ensures that the encoder and decoder work together to learn a meaningful representation.
+    
+
+Benefits of Using CAEs:
+- **Robust Representations:** By minimizing sensitivity to input perturbations, CAEs learn representations that are less susceptible to noise and small variations in the data.
+- **Manifold Learning:** CAEs are effective in learning the structure of manifolds, allowing them to capture the underlying low-dimensional structure of complex, high-dimensional data.
+- **Feature Extraction:** The learned representations can be used as features for downstream tasks like classification or information retrieval.
+
+In essence, CAEs provide a powerful mechanism for learning representations that capture the most important variations within data while ignoring irrelevant noise. This makes them valuable tools for tasks requiring robust feature extraction and the understanding of complex data structures.
+
+### Predictive Sparse Decomposition
+## Predictive Sparse Decomposition: Bridging Sparse Coding and Autoencoders
+
+**Predictive sparse decomposition (PSD)** combines elements of sparse coding and parametric autoencoders. The sources describe PSD as a hybrid model that utilizes a parametric encoder, denoted as `f(x)`, to predict the output of an iterative sparse coding inference process. This approach aims to learn features that are both sparse and predictable by a compact model.
+
+- **Parametric Encoder (`f(x)`):** This component is a neural network that takes the input data `x` and produces a dense representation, which serves as an initial guess for the sparse code `h`.
+- **Iterative Sparse Coding:** This step involves minimizing a cost function that encourages sparsity in the representation `h`, similar to traditional sparse coding methods. The cost function typically includes a reconstruction error term and a sparsity-inducing penalty, such as the L1 norm.
+- **Parametric Decoder (`g(h)`):** This component takes the sparse code `h` and reconstructs the input data `x`. It's typically implemented as a neural network as well.
+
+PSD training involves minimizing the following cost function:
+
+```
+|| x - g(h) ||^2 + λ|h|_1 + γ|| h - f(x) ||^2
+```
+
+where:
+
+- `|| x - g(h) ||^2` is the reconstruction error, measuring the difference between the input `x` and the reconstruction `g(h)`.
+- `λ|h|_1` is the sparsity penalty, encouraging the code `h` to have many zeros.
+- `γ|| h - f(x) ||^2` is a prediction error term that encourages the parametric encoder `f(x)` to produce a good initial guess for the sparse code `h`.
+
+The training procedure alternates between two steps:
+
+1. **Sparse Coding Inference:** For a given input `x`, the code `h` is iteratively optimized to minimize the cost function. The parametric encoder `f(x)` provides a starting point for this optimization, making the process faster than traditional sparse coding.
+2. **Parameter Updates:** The parameters of the encoder `f(x)` and decoder `g(h)` are updated to minimize the cost function, using gradient descent.
+
+PSD offers several advantages over traditional sparse coding and basic autoencoders:
+
+- **Fast Inference:** The parametric encoder provides a good initial guess for the sparse code, significantly speeding up the iterative sparse coding inference process.
+- **Learned Approximate Inference:** PSD essentially learns a parametric approximation to the iterative sparse coding inference procedure. This learned approximation, represented by the encoder `f(x)`, can be used for fast feature extraction at test time.
+- **Flexibility and Stackability:** Since the encoder and decoder are parametric functions (typically neural networks), PSD models can be easily stacked to create deeper architectures. This allows for hierarchical feature learning and can lead to more powerful representations.
+
+PSD has been successfully applied to several tasks, including:
+
+- **Object Recognition in Images and Video:** PSD has been used to learn features for object recognition tasks, demonstrating good performance on benchmark datasets.
+- **Audio Processing:** PSD has also been utilized for audio feature learning, showing promise for tasks like speech recognition and music analysis.

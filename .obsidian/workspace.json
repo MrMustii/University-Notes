@@ -11,16 +11,6 @@
             "id": "f5496a1d3cd64006",
             "type": "leaf",
             "state": {
-              "type": "image",
-              "state": {
-                "file": "Masters/Deep learning/attachments/Pasted image 20241013173004.png"
-              }
-            }
-          },
-          {
-            "id": "bde3909bad9daa2a",
-            "type": "leaf",
-            "state": {
               "type": "markdown",
               "state": {
                 "file": "Masters/Deep learning/Deep learning notes.md",
@@ -29,8 +19,7 @@
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -80,7 +69,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "35e3bf0212ccb671",
@@ -158,25 +148,24 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "1d91021c702c5d9e",
+  "active": "f5496a1d3cd64006",
   "lastOpenFiles": [
-    "Masters/Deep learning/attachments/Pasted image 20241014185714.png",
-    "Masters/Deep learning/attachments/Pasted image 20241013173004.png",
-    "Masters/Deep learning/attachments/Pasted image 20241013173017.png",
-    "Masters/Deep learning/Deep learning notes.md",
-    "Masters/Deep learning/attachments/Pasted image 20241014171233.png",
-    "Masters/Deep learning/attachments/Pasted image 20241014171135.png",
-    "Masters/Deep learning/attachments/Pasted image 20241014170745.png",
-    "Masters/Deep learning/attachments/Pasted image 20241014170720.png",
-    "Masters/Deep learning/attachments/Pasted image 20241014170711.png",
-    "Masters/Deep learning/attachments/Pasted image 20241014162804.png",
-    "Masters/Deep learning/attachments/Pasted image 20241014162621.png",
-    "Masters/Deep learning/attachments/Pasted image 20241014162003.png",
-    "neuralnetworksanddeeplearning.md",
-    "Masters/Deep learning/Week 1.md",
-    "Masters/Deep learning/Untitled.md",
-    "Masters/Deep learning/Random notes.md",
+    "Pasted image 20241020212023.png",
+    "Pasted image 20241020211954.png",
+    "Pasted image 20241020211035.png",
+    "Pasted image 20241020203725.png",
+    "Pasted image 20241020183624.png",
+    "Pasted image 20241020183605.png",
+    "Pasted image 20241018171356.png",
+    "Pasted image 20241018170959.png",
+    "Screenshot-from-2021-03-09-12-51-12.webp",
+    "Screenshot-from-2021-03-09-11-43-08-1.webp",
+    "Screenshot-from-2021-03-09-11-41-50.webp",
     "Masters/Deep learning/Exercises.md",
+    "Masters/Deep learning/Random notes.md",
+    "Masters/Deep learning/Week 1.md",
+    "Masters/Deep learning/Deep learning notes.md",
+    "Masters/Deep learning/Untitled.md",
     "Masters/Computational tools for data science/Computational Tools for Data Science week 1.md",
     "attachments",
     "Masters/Logical Theories for Uncertainty and Learning/Exercises.md",
@@ -206,6 +195,7 @@
     "Bachelors/Y3S2_Database_Systems/SQL.md",
     "Bachelors/Bachelor Project/MVVM.md",
     "Bachelors/Bachelor Project/BLE.md",
+    "Masters-Notes/Masters/Logical Theories for Uncertainty and Learning/Logical Theories For Uncertainty and Learning.md",
     "Untitled.canvas"
   ]
 }
